@@ -124,11 +124,11 @@ struct WaveletMatrix{
       //cout << lp << ' ' << rp << endl;
       for(int j=0;j<rp;j++)lv[lp+j]=rv[j];
       swap(data,lv);
-      cout << zeroNum[i] << endl;
+      /*cout << zeroNum[i] << endl;
       for(int j=0;j<length;j++){
         cout << data[j] << ' ';
       }
-      cout << endl;
+      cout << endl; */
     }
   }
 
@@ -256,6 +256,136 @@ struct WaveletMatrix{
     else return kth_min(l,r,k-1);
   }
 };
+
+struct SuffixArray{
+  string s;
+  vector<int> sa;
+  vector<int> rank;
+  vector<int> lcp;
+  explicit SuffixArray(string s):s(s){
+    int n = s.size();
+    sa.resize(n+1);
+    rank.resize(n+1);
+    vector<int> tmp(n+1);
+    for(int i=0;i<=n;i++){
+      rank[i] = (i<n)?s[i]:-1;
+      sa[i] = i;
+    }
+    for(int k=1;k<=n;k*=2){
+      auto compare_sa = 
+        [&](const int &i,const int &j){
+           if(rank[i]!=rank[j])return rank[i]<rank[j];
+           else{
+             int ri=(i+k<=s.size())?rank[i+k]:-1;
+             int rj=(j+k<=s.size())?rank[j+k]:-1;
+             return ri<rj;
+           }
+        };
+      sort(sa.begin(),sa.end(),compare_sa);
+      tmp[sa[0]]=0;
+      for(int i=1;i<=n;i++)tmp[sa[i]]=tmp[sa[i-1]]+(compare_sa(sa[i-1],sa[i])?1:0);
+      for(int i=0;i<=n;i++)rank[i]=tmp[i];
+    }
+  }
+  size_t size() const {
+    return s.size();
+  }
+  int operator [] (int id) const {
+    return sa[id];
+  }
+  bool contain(string t){
+    int l = 0,r = s.size()+1;
+    while(r-l>1){
+      int mid = (l+r)/2;
+      if(s.compare(sa[mid],t.size(),t)<0){
+        l = mid;
+      }else{
+        r = mid;
+      }
+    }
+    return s.compare(sa[r],t.size(),t)==0;
+  }
+};
+struct LongestCommonPrefix{
+  const SuffixArray &sa;
+  vector<int> lcp,rank;
+  explicit LongestCommonPrefix(const SuffixArray &sa):sa(sa){
+    int n = sa.size();
+    lcp.resize(sa.size()+1);
+    rank.resize(sa.size()+1);
+    for(int i=0;i<=sa.size();i++){
+      rank[sa[i]]=i;
+    }
+    int h = 0;
+    lcp[0] = 0;
+    for(int i=0;i<sa.size();i++){
+      int j = sa[rank[i]-1];
+      if(h>0)h--;
+      for(;i+h<n&&j+h<n;h++)if(sa.s[i+h]!=sa.s[j+h])break;
+      lcp[rank[i]-1] = h;
+    }
+  }
+  int operator [] (int id) const {
+    assert(id>=0&&id<lcp.size());
+    return lcp[id];
+  }
+};
+
+struct BurrowsWheelerTransform{
+  vector<char> bwt;
+  const SuffixArray &sa;
+  explicit BurrowsWheelerTransform(const SuffixArray &sa):sa(sa){
+    bwt.resize(sa.size()+1);
+    for(int i=0;i<bwt.size();i++){
+      if(sa[i]==0)bwt[i] = (char)7; // dummy
+      else bwt[i] = sa.s[sa[i]-1];
+    }
+  }
+  char operator [] (int id) const {
+    return bwt[id];
+  }
+  size_t size(){
+    return bwt.size();
+  }
+};
+
+pair<int,int> searchFMIndex(
+    SuffixArray &sa,
+    WaveletMatrix<unsigned char,8> &wm,
+    vector<int> &lessCount,
+    string t){
+  int l = 0, r = sa.size()+1; // because of dummy character
+  for(int i=0;i<t.size();i++){
+    unsigned char c = t[t.size()-1-i];
+    //cout << wm.rank(c,l) << ' ' << wm.rank(c,r) << endl;
+    l = lessCount[c]+wm.rank(c,l);
+    r = lessCount[c]+wm.rank(c,r);
+    //cout << "wavelet " << l << ' ' << r << endl;
+    if(l>=r)return make_pair(-1,-1);
+  }
+  return make_pair(l,r-1);
+}
+
+pair<int,int> contain(string s,string t){
+  SuffixArray sa(s);
+  BurrowsWheelerTransform bwt(sa);
+  vector<unsigned char> bw;
+  for(int i=0;i<bwt.size();i++){
+    bw.push_back((unsigned char)bwt[i]);
+  }
+  WaveletMatrix<unsigned char,8> wm(bw);
+
+  s += ((char)7); // dummy
+  vector<int> lessCount(256);
+  for(int i=0;i<s.size();i++){
+    lessCount[s[i]+1]++;
+  }
+  for(int i=1;i<lessCount.size();i++){
+    lessCount[i] += lessCount[i-1];
+  }
+  return searchFMIndex(sa,wm,lessCount,t);
+}
+
 int main(){
   FullyIndexableDictionary FID(10000);
   FID.set(12);
@@ -268,5 +398,6 @@ int main(){
   for(int i=0;i<s.size();i++)v.push_back((unsigned char)s[i]);
   WaveletMatrix<unsigned char,8> wm(v);
   cout << wm.rangefreq(2,8,'b','r') << endl;
+  cout << contain("abra","br") << endl;
   return 0;
 }

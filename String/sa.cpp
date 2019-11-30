@@ -36,11 +36,23 @@ struct SuffixArray{
   int operator [] (int id) const {
     return sa[id];
   }
+  bool contain(string t){
+    int l = 0,r = s.size()+1;
+    while(r-l>1){
+      int mid = (l+r)/2;
+      if(s.compare(sa[mid],t.size(),t)<0){
+        l = mid;
+      }else{
+        r = mid;
+      }
+    }
+    return s.compare(sa[r],t.size(),t)==0;
+  }
 };
 struct LongestCommonPrefix{
   const SuffixArray &sa;
   vector<int> lcp,rank;
-  LongestCommonPrefix(const SuffixArray &sa):sa(sa){
+  explicit LongestCommonPrefix(const SuffixArray &sa):sa(sa){
     int n = sa.size();
     lcp.resize(sa.size()+1);
     rank.resize(sa.size()+1);
@@ -65,10 +77,10 @@ struct LongestCommonPrefix{
 struct BurrowsWheelerTransform{
   vector<char> bwt;
   const SuffixArray &sa;
-  BurrowsWheelerTransform(const SuffixArray &sa):sa(sa){
+  explicit BurrowsWheelerTransform(const SuffixArray &sa):sa(sa){
     bwt.resize(sa.size()+1);
     for(int i=0;i<bwt.size();i++){
-      if(sa[i]==0)bwt[i] = '$'; // dummy
+      if(sa[i]==0)bwt[i] = (char)7; // dummy
       else bwt[i] = sa.s[sa[i]-1];
     }
   }
