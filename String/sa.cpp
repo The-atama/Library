@@ -95,7 +95,7 @@ int main(){
 	SuffixArray sa(s);
   LongestCommonPrefix lcp(sa);
 	for(int i=0;i<=s.size();i++){
-		cout << setw(3) << sa[i] << ' ' << lcp[i] <<  ' ' << s.substr(sa[i]) << endl;
+		cout << setw(3) << sa[i] << ' ' << s.substr(sa[i]) << endl;
 	}
 	return 0;
 }

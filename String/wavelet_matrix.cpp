@@ -398,6 +398,6 @@ int main(){
   for(int i=0;i<s.size();i++)v.push_back((unsigned char)s[i]);
   WaveletMatrix<unsigned char,8> wm(v);
   cout << wm.rangefreq(2,8,'b','r') << endl;
-  cout << contain("abra","br") << endl;
+  cout << contain("abra","br").first << endl;
   return 0;
 }
