@@ -1,8 +1,5 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef pair<int,int> P;
-typedef long long ll;
-typedef vector<int> vi;
+using namespace std; typedef pair<int,int> P; typedef long long ll; typedef vector<int> vi;
 typedef vector<ll> vll;
 // #define int long long
 #define pb push_back
@@ -100,9 +97,8 @@ namespace Math{
 }
 
 // verified https://atcoder.jp/contests/abc150/submissions/9431876
-template<class T>
+template<class T,int MOD>
 struct RollingHash{
-  static constexpr int MOD = 1e9+7;
   using Hash = Math::ModInt<MOD>;
   vector<Hash> hash; // hash[i] is hash of s[0,i)
   vector<Hash> powB;
@@ -138,7 +134,8 @@ signed main(){
     c[i+N] = c[i] = (a[i]^a[(i+1)%N]);
     d[i] = (b[i]^b[(i+1)%N]);
   }
-  RollingHash<vector<int>> rc(c),rd(d);
+  const int MOD = 1e9+7;
+  RollingHash<vector<int>,MOD> rc(c),rd(d);
   for(int i=0;i<N;i++){
     if(rc.get(i,i+N)==rd.get(0,N)){
       cout << i << ' ' << (a[i]^b[0]) << endl;
