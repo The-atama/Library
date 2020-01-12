@@ -12,8 +12,7 @@ struct RMQ{
 			seg[k]=min(seg[k*2+1],seg[k*2+2]);
 		}
 	}
-	int query(int a,int b,int k,int l,int r)
-	{
+	int query(int a,int b,int k,int l,int r){
 		if(r<=a||b<=l)return INF;
 		else if(a<=l&&r<=b)return seg[k];
 		else return min(query(a,b,k*2+1,l,(l+r)/2),query(a,b,k*2+2,(l+r)/2,r));

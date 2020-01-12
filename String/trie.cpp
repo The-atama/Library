@@ -1,19 +1,4 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <cmath>
-#include <complex>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <numeric>
-#include <vector>
-#include <queue>
-#include <stack>
-#include <functional>
-#include <iostream>
-#include <map>
-#include <set>
+#include <bits/stdc++.h>
 using namespace std;
 typedef pair<int,int> P;
 typedef long long ll;
@@ -41,23 +26,18 @@ struct Trie{
 	}
 };
 Trie *root;
-int find(string s,Trie *ptr)
-{
-	for(int i=0;i<s.size();i++)
-	{
+int find(string s,Trie *ptr){
+	for(int i=0;i<s.size();i++){
 		int idx = s[i]-'a';
 		ptr = ptr->child[idx];
 		if(ptr->flag)return i+1;
 	}
 	return (int)s.size();
 }
-void update(string s,Trie *ptr)
-{
-	for(int i=0;i<s.size();i++)
-	{
+void update(string s,Trie *ptr){
+	for(int i=0;i<s.size();i++){
 		int idx = s[i]-'a';
-		if(!(ptr->child[idx]))
-		{
+		if(!(ptr->child[idx])){
 			(ptr->child_num)++;
 			ptr->child[idx] = new Trie();
 		}
@@ -66,17 +46,14 @@ void update(string s,Trie *ptr)
 	}
 	return;
 }
-int main()
-{
+int main(){
 	int T;
 	scanf("%d",&T);
-	for(int t=0;t<T;t++)
-	{
+	for(int t=0;t<T;t++){
 		int N,ans=0;
 		scanf("%d",&N);
 		root = new Trie();
-		for(int i=0;i<N;i++)
-		{
+		for(int i=0;i<N;i++){
 			string s;
 			cin >> s;
 			update(s,root);

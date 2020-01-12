@@ -1,23 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef pair<int,int> P;
-typedef long long ll;
-typedef vector<int> vi;
-typedef vector<ll> vll;
 #define pb push_back
-#define mp make_pair
-#define eps 1e-9
-#define INF 2000000000
-#define LLINF 1000000000000000ll
-#define sz(x) ((int)(x).size())
-#define fi first
-#define sec second
-#define all(x) (x).begin(),(x).end()
-#define sq(x) ((x)*(x))
-#define rep(i,n) for(int (i)=0;(i)<(int)(n);(i)++)
-#define repn(i,a,n) for(int (i)=(a);(i)<(int)(n);(i)++)
-#define EQ(a,b) (abs((a)-(b))<eps)
-#define dmp(x) cerr << __LINE__ << " " << #x << " " << x << endl;
 template<class T> void chmin(T& a,const T& b){if(a>b)a=b;}
 template<class T> void chmax(T& a,const T& b){if(a<b)a=b;}
 template<class T,class U>
@@ -48,7 +31,9 @@ void fastio(){
 }
 
 // verifyed https://atcoder.jp/contests/atc001/submissions/7586931
+
 using Complex = complex<double>;
+
 vector<Complex> dft(vector<Complex> f,int n,int sgn=1){
   if(n==1)return f;
   vector<Complex> f0,f1;
@@ -66,6 +51,7 @@ vector<Complex> dft(vector<Complex> f,int n,int sgn=1){
   }
   return f;
 }
+
 vector<Complex> idft(vector<Complex> f,int n){
   f = dft(f,n,-1);
   for(int i=0;i<f.size();i++){
@@ -73,6 +59,7 @@ vector<Complex> idft(vector<Complex> f,int n){
   }
   return f;
 }
+
 vector<Complex> mult(vector<Complex> A,vector<Complex> B){
   int n = 1;
   while(n<A.size()+B.size()+1)n<<=1;
@@ -84,6 +71,7 @@ vector<Complex> mult(vector<Complex> A,vector<Complex> B){
   for(int i=0;i<n;i++)C.pb(A[i]*B[i]);
   return idft(C,n);
 }
+
 int main(){
   fastio();
 	int N;
