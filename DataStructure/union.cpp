@@ -1,13 +1,15 @@
-#include <cstdio>
-#include <algorithm>
-const int SIZE = 100100;
-struct UnionFind
-{
-	int par[SIZE],rank[SIZE];
-	void init(int n){
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct UnionFind{
+	vector<int> par,rank,sz;
+	UnionFind(int n){
+    par.assign(n,0);
+    rank.assign(n,0);
+    sz.assign(n,1);
 		for(int i=0;i<n;i++){
 			par[i] = i;
-			rank[i] = 0;
 		}
 	}
 	int find(int x){
@@ -18,17 +20,19 @@ struct UnionFind
 		x = find(x);
 		y = find(y);
 		if(x==y)return;
-		if(rank[x] < rank[y])par[x] = y;
-		else{
+		if(rank[x] < rank[y]){
+      par[x] = y;
+      sz[y] += sz[x];
+    }else{
 			par[y] = x;
+      sz[x] += sz[y];
 			if(rank[x] == rank[y])rank[x]++;
 		}	
 	}
 	bool same(int x,int y){
 		return find(x) == find(y);
 	}
-}uf;
-int main()
-{
+};
+int main(){
 	return 0;
 }

@@ -1,23 +1,30 @@
 #include <bits/stdc++.h>
-using namespace std; typedef pair<int,int> P; typedef long long ll; typedef vector<int> vi;
+
+using namespace std;
+
+typedef pair<int,int> P;
+typedef long long ll;
+typedef vector<int> vi;
 typedef vector<ll> vll;
 // #define int long long
 #define pb push_back
 #define mp make_pair
 #define eps 1e-9
-#define INF 2000000000
-#define LLINF 10000000000000ll
+#define INF 2000000000 //2e9
+#define LLINF 1000000000000000ll // 1e15
 #define fi first
 #define sec second
 #define all(x) (x).begin(),(x).end()
 #define sq(x) ((x)*(x))
 #define dmp(x) cerr << #x << ": " << x << endl;
+
 template<class T> void chmin(T& a,const T& b){if(a>b)a=b;}
 template<class T> void chmax(T& a,const T& b){if(a<b)a=b;}
-template<class T>
-using MaxHeap = priority_queue<T>;
-template<class T>
-using MinHeap = priority_queue<T,vector<T>,greater<T> >;
+
+template<class T> using MaxHeap = priority_queue<T>;
+template<class T> using MinHeap = priority_queue<T,vector<T>,greater<T>>;
+template<class T> vector<T> vect(int len,T elem){ return vector<T>(len,elem); }
+
 template<class T,class U>
 ostream& operator << (ostream& os,const pair<T,U>& p){
   os << p.fi << ',' << p.sec; return os;
@@ -51,32 +58,51 @@ namespace Math{
     ll val;
     ModInt():val(0ll){}
     ModInt(const ll& v):val(((v%MOD)+MOD)%MOD){}
-    ModInt pow(ModInt a,ll x){
-      ModInt res = ModInt(1ll);
-      while(x){
-        if(x&1)res *= a;
-        x >>= 1;
-        a = a*a;
-      }
-      return res;
-    }
     bool operator==(const ModInt& x)const{return val==x.val;}
     bool operator!=(const ModInt& x)const{return !(*this==x);}
     bool operator<(const ModInt& x)const{return val<x.val;}
     bool operator>(const ModInt& x)const{return val>x.val;}
     bool operator>=(const ModInt& x)const{return !(*this<x);}
     bool operator<=(const ModInt& x)const{return !(*this>x);}
+    ModInt operator-()const{return ModInt(MOD-val);}
+    ModInt inv()const{return this->pow(MOD-2);}
     ModInt& operator+=(const ModInt& x){if((val+=x.val)>=MOD)val-=MOD;return *this;}
     ModInt& operator-=(const ModInt& x){if((val+=MOD-x.val)>=MOD)val-=MOD;return *this;}
     ModInt& operator*=(const ModInt& x){(val*=x.val)%=MOD;return *this;}
+    ModInt& operator/=(const ModInt& x){return *this *= x.inv();};
     ModInt operator+(const ModInt& x)const{return ModInt(*this)+=x;}
     ModInt operator-(const ModInt& x)const{return ModInt(*this)-=x;}
     ModInt operator*(const ModInt& x)const{return ModInt(*this)*=x;}
+    ModInt operator/(const ModInt& x)const{return ModInt(*this)/=x;}
     friend istream& operator>>(istream&i,ModInt& x){ll v;i>>v;x=v;return i;}
     friend ostream& operator<<(ostream&o,const ModInt& x){o<<x.val;return o;}
+    ModInt pow(ll x)const{
+      auto res = ModInt(1ll);
+      auto b = *this;
+      while(x){
+        if(x&1)res *= b;
+        x >>= 1;
+        b *= b;
+      }
+      return res;
+    }
   };
-  constexpr int MOD = 1e9+7;
+
+  template<int MOD>
+  ModInt<MOD> pow(ModInt<MOD> a,ll x){
+    ModInt<MOD> res = ModInt<MOD>(1ll);
+    while(x){
+      if(x&1)res *= a;
+      x >>= 1;
+      a *= a;
+    }
+    return res;
+  }
+
+  // constexpr int MOD = 1e9+7;
+  constexpr int MOD = 998244353;
   using mint = ModInt<MOD>;
+
   vector<mint> inv,fac,facinv;
   // notice: 0C0 = 1 
   ModInt<MOD> nCr(int n,int r){
@@ -96,55 +122,11 @@ namespace Math{
   }
 }
 
-// verified https://atcoder.jp/contests/abc150/submissions/9431876
-// hash[i] = s[0]*B^(i-1)+...+s[i-1]
-template<class T,int MOD>
-struct RollingHash{
-  using Hash = Math::ModInt<MOD>;
-  vector<Hash> hash; // hash[i] is hash of s[0,i)
-  vector<Hash> powB;
-  const Hash B = Hash(10007);
-  T s;
-  explicit RollingHash(T s):s(s){
-    hash.assign(s.size()+1,Hash(0));
-    powB.assign(s.size()+1,Hash(0));
-    powB[0] = Hash(1);
-    for(int i=0;i<s.size();i++){
-      powB[i+1] = powB[i]*B;
-      hash[i+1] = hash[i]*B+Hash(s[i]);
-    }
-  }
-  Hash get(int l,int r){ // [l,r)
-    assert(l<r);
-    return hash[r]-hash[l]*powB[r-l];
-  }
-  Hash substr(int l,int len){ // [l,l+len)
-    return get(l,l+len);
-  }
-  // hash of s+t , length of t is len, powlen = powB[len]
-  Hash concat(Hash t,Hash powlen){
-    return hash[s.size()]*powlen+t;
-  }
+template<class T>
+struct Poly{
+  vector<T> v;
 };
 
 signed main(){
-  fastio();
-  int N;
-  cin >> N;
-  vector<int> a(N),b(N);
-  cin >> a;
-  cin >> b;
-  vector<int> c(2*N),d(N);
-  for(int i=0;i<N;i++){
-    c[i+N] = c[i] = (a[i]^a[(i+1)%N]);
-    d[i] = (b[i]^b[(i+1)%N]);
-  }
-  const int MOD = 1e9+7;
-  RollingHash<vector<int>,MOD> rc(c),rd(d);
-  for(int i=0;i<N;i++){
-    if(rc.get(i,i+N)==rd.get(0,N)){
-      cout << i << ' ' << (a[i]^b[0]) << endl;
-    }
-  }
   return 0;
 }

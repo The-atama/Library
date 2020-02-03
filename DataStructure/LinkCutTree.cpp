@@ -1,26 +1,9 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <cmath>
-#include <complex>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <numeric>
-#include <vector>
-#include <queue>
-#include <stack>
-#include <functional>
-#include <iostream>
-#include <map>
-#include <set>
-#include <cassert> 
+#include <bits/stdc++.h>
 using namespace std;
 typedef pair<int,int> P;
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<ll> vll;
-#define pu push
 #define pb push_back
 #define mp make_pair
 #define eps 1e-9
@@ -28,11 +11,8 @@ typedef vector<ll> vll;
 #define sz(x) ((int)(x).size())
 #define fi first
 #define sec second
-#define SORT(x) sort((x).begin(),(x).end())
 #define all(x) (x).begin(),(x).end()
-#define rep(i,n) for(int (i)=0;(i)<(int)(n);(i)++)
-#define repn(i,a,n) for(int (i)=(a);(i)<(int)(n);(i)++)
-#define EQ(a,b) (abs((a)-(b))<eps)
+
 // Link Cut Tree
 // 木をHeavy-Light decompositionし、各pathをsplay木(平衡二分木)で管理
 // 各splay木において、左にあるほど根に近い。
@@ -121,6 +101,7 @@ struct Node{
 			rev = false;
 		}
 	}
+  /*
 	void push_all(){ 
 		// splay前に一気に根までpushする。
 		// stack overflowする可能性があるので、する場合は
@@ -128,6 +109,7 @@ struct Node{
 		if(!is_root())pp->push_all();
 		push();
 	}
+  */
 	bool is_root(){ // splay木の根か
 		return !pp||(pp->lp!=this&&pp->rp!=this);
 	}

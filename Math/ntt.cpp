@@ -167,17 +167,18 @@ vector<ll> ConvolutionWithGarner(vector<ll> a,vector<ll> b,ll mod){
 
 int main(){
   fastio();
-	int N;
-	cin >> N;
-	vector<ll> A(N+1,0),B(N+1,0);
-	for(int i=1;i<=N;i++){
-		cin >> A[i] >> B[i];
-	}
-	//vector<ll> C = ConvolutionWithGarner(A,B,1000000007);
-  NTT1 ntt1;
+  int N,M;
+  cin >> N >> M;
+  vector<ll> A(N,0),B(M,0);
+  cin >> A;
+  cin >> B;
+  // vector<ll> C = ConvolutionWithGarner(A,B,1000000007);
+  NTT2 ntt1;
   vector<ll> C = ntt1.mult(A,B);
-	for(int i=1;i<=2*N;i++){
-		cout << C[i] << endl;
-	}
+  for(int i=0;i<N+M-1;i++){
+    cout << C[i];
+    if(i+1<N+M-1)cout << ' ';
+    else cout << endl;
+  }
 	return 0;
 }

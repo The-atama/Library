@@ -49,6 +49,7 @@ struct SuffixArray{
     return s.compare(sa[r],t.size(),t)==0;
   }
 };
+
 struct LongestCommonPrefix{
   const SuffixArray &sa;
   vector<int> lcp,rank;
