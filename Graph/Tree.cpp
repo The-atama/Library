@@ -82,7 +82,8 @@ struct Tree{
     dfs(root,-1,0,Cost(0));
   }
 
-  void construct_dpar(){ LOG_V = 1; while((1<<LOG_V)<=V)LOG_V++;
+  void construct_dpar(){
+    LOG_V = 1; while((1<<LOG_V)<=V)LOG_V++;
     dpar.resize(LOG_V);
     for(int i=0;i<LOG_V;i++)dpar[i].resize(V,-1);
     for(int i=0;i<V;i++)dpar[0][i] = par[i];
@@ -101,6 +102,18 @@ struct Tree{
       if(res==-1)return -1;
     }
     return res;
+  }
+  int lca(int u,int v){
+    if(depth[u]>depth[v])swap(u,v);
+    v = kth_parent(v,depth[v]-depth[u]);
+    if(u==v)return v;
+    for(int i=LOG_V-1;i>=0;i--){
+      if(dpar[i][u]!=dpar[i][v]){
+        u = dpar[i][u];
+        v = dpar[i][v];
+      }
+    }
+    return par[v];
   }
   void dump_tree(){
     for(int i=0;i<V;i++){
