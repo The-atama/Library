@@ -47,8 +47,8 @@ struct Tree{
   vector<vector<int>> dpar;
   vector<int> par;
   vector<int> subtree_size;
-  vector<int> centroid;
-  vector<Cost> dist;
+  vector<int> centroid; // list of centroid , length is no more than 2
+  vector<Cost> dist; // distance from root node
   vector<vector<edge<Cost>>> G;
   Tree(){}
   Tree(int V,int r=0) : V(V),root(r) {
@@ -117,6 +117,9 @@ struct rerooting{
   Tree<Cost> T;
   using Promoter = function<pair<Data,vector<pair<edge<Cost>,Data>>>
                              (vector<pair<edge<Cost>,Data>>,Cost,Data)>;
+  // 子への辺と子の元のdp値のpairのvector と 親への辺のコスト と 親のデータ をもらって、
+  // 現在の頂点を根とした時のdp値と、子への辺と子へ渡すデータdparのpairのvectorを返す
+  // promoter内で左右からの累積(sum,max,min)を使うことが多いだろう。
   Promoter promoter;
   rerooting(Tree<Cost>& T,vector<Data> dp_fixed,Promoter promoter)
     : T(T), dp_fixed(dp_fixed), promoter(promoter) {
