@@ -3,7 +3,8 @@ using namespace std;
 
 template<class Cost>
 struct edge{
-  int from,to,cost;
+  int from,to
+  Cost cost;
   edge(){}
   edge(int from,int to,Cost cost):from(from),to(to),cost(cost){}
 };
