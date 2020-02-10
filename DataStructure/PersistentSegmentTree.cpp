@@ -2,7 +2,7 @@
 
 using namespace std;
 
-typedef pair<int,int> P; typedef long long ll;
+typedef long long ll;
 typedef vector<int> vi;
 typedef vector<ll> vll;
 // #define int long long
@@ -51,6 +51,7 @@ void fastio(){
   cout<<fixed<<setprecision(20);
 }
 
+// verify https://judge.yosupo.jp/submission/3607
 template<class D>
 struct PersistentSegmentTree{
 
@@ -81,8 +82,9 @@ struct PersistentSegmentTree{
 
   Node* update(Node* v,int k,const D& x,int l,int r){
     if(r-l==1){
-      assert(l==k);
-      return new Node(x);
+      // assert(l==k);
+      D prev = (v==nullptr)?d_unit:v->data;
+      return new Node(dm(prev,x));
     }else{
       Node *lch,*rch;
       if(k<(l+r)/2){
@@ -123,7 +125,7 @@ struct PersistentSegmentTree{
   }
 };
 
-signed main(){
+void sample(){
   auto dm = [](int a,int b){return a+b;};
   PersistentSegmentTree<int> seg(4,dm,0);
   auto root = seg.root();
@@ -132,5 +134,47 @@ signed main(){
   auto r3 = seg.update(r2,2,4);
   dmp(seg.query(r3,0,2));
   seg.show(r3);
+}
+
+using P = pair<int,int>;
+using Point = pair<P,ll>;
+#define x first.first
+#define y first.second
+#define w second
+
+vector<Point> ps;
+vector<PersistentSegmentTree<ll>::Node*> roots;
+auto dm = [](ll a,ll b){return a+b;};
+PersistentSegmentTree<ll> seg(1000000005,dm,0ll);
+
+ll solve(int l,int r,int u){ // [l,r) less than u
+  int k = lower_bound(all(ps),Point(P(u,-1),-1))-ps.begin();
+  if(k==0)return 0ll;
+  return seg.query(roots[k-1],l,r);
+}
+
+signed main(){
+  int N,Q;
+  cin >> N >> Q;
+  for(int i=0;i<N;i++){
+    Point p;
+    cin >> p;
+    ps.push_back(p);
+  }
+  sort(all(ps));
+  for(int i=0;i<ps.size();i++){
+    PersistentSegmentTree<ll>::Node* prev_root = (roots.empty())?nullptr:roots.back();
+    roots.push_back(seg.update(prev_root,ps[i].y,ps[i].w));
+    /*
+    cout << "----------------------------" << endl;
+    seg.show(roots.back());
+    cout << "----------------------------" << endl;
+    */
+  }
+  for(int i=0;i<Q;i++){
+    int l,d,r,u;
+    cin >> l >> d >> r >> u;
+    cout << solve(d,u,r)-solve(d,u,l) << endl;
+  }
   return 0;
 }
