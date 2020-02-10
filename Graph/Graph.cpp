@@ -38,6 +38,7 @@ struct Graph{
     return G[id];
   }
 
+  // verified https://atcoder.jp/contests/dwacon6th-final-open/submissions/10023433
   vector<Cost> dijkstra(int s){
     assert(0<=s&&s<G.size());
     vector<Cost> dist;
@@ -70,6 +71,7 @@ struct Graph{
   }
 };
 
+// verified https://judge.yosupo.jp/submission/3440
 template<class Graph>
 struct SCC{
   Graph G,rG; // Graph and reverse Graph
