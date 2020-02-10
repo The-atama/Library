@@ -1,12 +1,21 @@
 #include <bits/stdc++.h>
+
 using namespace std;
+
+template<class T> using MinHeap = priority_queue<T,vector<T>,greater<T>>;
 
 template<class Cost>
 struct edge{
-  int from,to
+  int from,to;
   Cost cost;
   edge(){}
   edge(int from,int to,Cost cost):from(from),to(to),cost(cost){}
+
+  // for debug
+  friend ostream& operator << (ostream& os,const edge& e) {
+    os << e.from << " -> " << e.to << " : " << e.cost << ", ";
+    return os;
+  }
 };
 
 template<class Cost>
@@ -20,13 +29,44 @@ struct Graph{
   void add_edge(int a,int b,Cost cost = Cost(0)){
     G[a].push_back(edge<Cost>(a,b,cost));
   }
-  void add_edge_undirect(int a, int b, Cost cost = Cost(0)){
+  void add_edge_undirected(int a, int b, Cost cost = Cost(0)){
     G[a].push_back(edge<Cost>(a,b,cost));
     G[b].push_back(edge<Cost>(b,a,cost));
   }
   size_t size() const { return G.size(); }
   const vector<edge<Cost>>& operator [] (int id) const {
     return G[id];
+  }
+
+  vector<Cost> dijkstra(int s){
+    assert(0<=s&&s<G.size());
+    vector<Cost> dist;
+    dist.assign(G.size(),numeric_limits<Cost>::max());
+    dist[s] = Cost(0);
+    MinHeap<pair<Cost,int>> q;    
+    q.push(make_pair(Cost(0),s));
+    while(!q.empty()){
+      auto a = q.top();
+      q.pop();
+      int v = a.second;
+      if(dist[v]<a.first)continue;
+      for(auto e : G[v]){
+        if(dist[e.to] > dist[v]+e.cost){
+          dist[e.to] = dist[v]+e.cost;
+          q.push(make_pair(dist[e.to],e.to));
+        }
+      }
+    }
+    return dist;
+  }
+
+  // for debug
+  friend ostream& operator << (ostream& os, const Graph g) {
+    for(int i=0;i<g.size();i++){
+      os << g[i];
+      if(i+1<g.size())os << endl;
+    }
+    return os;
   }
 };
 
