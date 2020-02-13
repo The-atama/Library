@@ -47,7 +47,6 @@ struct Tree{
   vector<vector<int>> dpar;
   vector<int> par;
   vector<int> subtree_size;
-  vector<int> centroid; // list of centroid , length is no more than 2
   vector<Cost> dist; // distance from root node
   vector<vector<edge<Cost>>> G;
   Tree(){}
@@ -72,10 +71,7 @@ struct Tree{
       int u = e.to;
       if(u==p)continue;
       subtree_size[v]+=dfs(u,v,d+1,c+e.cost);
-      if(subtree_size[u]>V/2)is_centroid=false;
     }
-    if(V-subtree_size[v]>V/2)is_centroid=false;
-    if(is_centroid)centroid.pb(v);
     return subtree_size[v];
   }
   void dfs(){
@@ -114,6 +110,9 @@ struct Tree{
       }
     }
     return par[v];
+  }
+  int size(){
+    return V;
   }
   void dump_tree(){
     for(int i=0;i<V;i++){
@@ -154,8 +153,52 @@ struct rerooting{
   }
 };
 
+template<class Tree>
+struct RecursiveCentroid{
+  const Tree T;
+  vector<int> subtree_size;
+  vector<bool> deleted;
+  vector<vector<int>> centroid_tree;
+  int centroid_tree_root;
+  int calc_subtree_size(int v,int p){
+    subtree_size[v] = 1;
+    for(const auto& e : T.G[v]){
+      if(e.to==p||deleted[e.to])continue;
+      subtree_size[v] += calc_subtree_size(e.to,v);
+    }
+    return subtree_size[v];
+  }
+  int find_centroid(int v,int p,int size){
+    for(const auto& e : T.G[v]){
+      if(e.to==p||deleted[e.to])continue;
+      if(subtree_size[e.to]>size/2){
+        // この先に重心がある
+        return find_centroid(e.to,v,size);
+      }
+    }
+    // ここが重心
+    return v;
+  }
+  int find_centroid_recursive(int v){
+    int c = find_centroid(v,-1,calc_subtree_size(v,-1));
+    deleted[c] = true;
+    for(const auto& e : T.G[c]){
+      if(!deleted[e.to])centroid_tree[c].push_back(find_centroid_recursive(e.to));
+    }
+    deleted[c] = false;
+    return c;
+  }
+
+  RecursiveCentroid(Tree& T):T(T){
+    deleted.assign(T.size(),false);
+    centroid_tree.resize(T.size());
+    subtree_size.resize(T.size());
+    centroid_tree_root = find_centroid_recursive(T.root);
+  }
+};
+
 template<class Cost>
-Cost diameter(Tree<Cost>& T){
+Cost diameter_dp(Tree<Cost>& T){
   auto promoter = [](vector<pair<edge<Cost>,Cost>> edgedata,Cost c,Cost d){
     Cost ret = d+c;
     auto next = edgedata;
@@ -195,6 +238,43 @@ Cost diameter(Tree<Cost>& T){
   // dmp(rr.dp_all);
   return *max_element(all(rr.dp_all));
 }
+
+template<class Cost>
+int diameter_centroid_decomposition(Tree<Cost>& T){
+  RecursiveCentroid<Tree<Cost>> rc(T);
+  vector<bool> deleted(T.size(),false);
+  function<Cost(int,int)> f = [&](int v,int p){
+    Cost res = Cost(0);
+    for(const auto& e : T.G[v]){
+      if(e.to==p||deleted[e.to])continue;
+      res = max(res,e.cost+f(e.to,v));
+    }
+    return res;
+  };
+  function<Cost(int)> rec = [&](int v){
+    deleted[v] = true;
+    vector<Cost> dists;
+    Cost res = Cost(0);
+    // calc this node
+    for(const auto& e : T.G[v]){
+      if(deleted[e.to])continue;
+      dists.push_back(e.cost+f(e.to,-1));
+    }
+    sort(all(dists));
+    reverse(all(dists));
+    if(dists.size()>=2)res = max(res,dists[0]+dists[1]);
+    if(dists.size()>=1)res = max(res,dists[0]);
+    // calc recursive
+    for(const int& u : rc.centroid_tree[v]){
+      res = max(res,rec(u));
+    }
+    deleted[v] = false;
+    return res;
+  };
+  return rec(rc.centroid_tree_root);
+}
+
+
 int main(){
   int N;
   cin >> N;
@@ -204,6 +284,6 @@ int main(){
     cin >> s >> t >> w;
     G.add_edge(s,t,w);
   }
-  cout << diameter(G) << endl;
+  cout << diameter_centroid_decomposition<int>(G) << endl;
   return 0;
 }

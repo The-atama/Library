@@ -249,14 +249,12 @@ void showtree(int n){
 	for(int i=0;i<n;i++)printf("%d p %d l %d r %d rev %d\n",i,num(nodev[i]->pp),num(nodev[i]->lp),num(nodev[i]->rp),nodev[i]->rev);
 }*/
 int N,Q;
-int main()
-{
+int main(){
 	scanf("%d %d",&N,&Q);
 	for(int i=0;i<N;i++)nodev[i]=new Node(i,0);
 	for(int i=0;i<N;i++)nodee[i]=new Node(i,1);
 	int cnt = 0;
-	for(int i=0;i<Q;i++)
-	{
+	for(int i=0;i<Q;i++){
 		int T,A,B;
 		scanf("%d %d %d",&T,&A,&B);
 		A--;B--;
