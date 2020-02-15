@@ -111,6 +111,10 @@ struct Tree{
     }
     return par[v];
   }
+  Cost distance(int u,int v){
+    int l = lca(u,v);
+    return dist[u]+dist[v]-dist[l]-dist[l];
+  }
   int size(){
     return V;
   }
@@ -284,6 +288,7 @@ int main(){
     cin >> s >> t >> w;
     G.add_edge(s,t,w);
   }
+  cout << diameter_dp<int>(G) << endl;
   cout << diameter_centroid_decomposition<int>(G) << endl;
   return 0;
 }

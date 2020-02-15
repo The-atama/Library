@@ -1,8 +1,6 @@
-#include <algorithm>
-#include <vector>
-#include <functional>
+#include <bits/stdc++.h>
+
 using namespace std;
-#define INF 2000000000
 
 template <class D>
 struct SegmentTree{
@@ -47,8 +45,13 @@ struct SegmentTree{
 			return dm(lch,rch);
 		}
 	}
+  D query(int a,int b){
+    return query(a,b,0,0,length);
+  }
 };
+
 int main(){
+  #define INF 2000000000
 	SegmentTree<int> seg(100,[](int x,int y){return min(x,y);},INF);
 	return 0;
 }

@@ -1,25 +1,29 @@
-#define MAX_N 100100
+#include <bits/stdc++.h>
+
+using namespace std;
+
+template<class T>
 struct BIT{
-	ll bit[MAX_N+1];
-	void add(int i,ll x){
-		i++;
-		while(i<=MAX_N){
-			bit[i]+=x;
-			i+=i&-i;
-		}
-		return;
-	}
-	ll sum(int i){
-		i++;
-		ll res=0;
-		while(i>0){
-			res+=bit[i];
-			i-=i&-i;
-		}
-		return res;
-	}
-	ll sum(int l,int r){// [l,r]
-		if(l==0)return sum(r);
-		else return sum(r)-sum(l-1);
-	}
+  int N;
+  vector<T> bit;
+  BIT(int N):N(N){
+    bit = vector<T>(N+1,T(0));
+  }
+  void add(int i,T x){
+    i++;
+    while(i<=N){ bit[i]+=x; i+=i&-i; }
+    return;
+  }
+  T sum(int i){
+    i++;
+    T res = T(0);
+    while(i>0){ res+=bit[i]; i-=i&-i; }
+    return res;
+  }
+  T sum(int l,int r){// [l,r]
+    assert(l<=r);
+    if(l==0)return sum(r);
+    else return sum(r)-sum(l-1);
+  }
 };
+

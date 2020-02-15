@@ -5,7 +5,6 @@ typedef long long ll;
 #define pb push_back
 #define mp make_pair
 #define eps 1e-10
-#define Vector Point
 #define Points vector<Point>
 #define INF 2000000000
 #define DOUBLE_INF 1e50
@@ -23,6 +22,7 @@ inline double add(double a,double b){
 	return a+b;
 }
 
+#define Vector Point
 struct Point{
 	double x,y;
 	Point() {}
