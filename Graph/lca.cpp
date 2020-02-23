@@ -1,20 +1,20 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
+#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <queue>
-#include <stack>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <vector>
 using namespace std;
-typedef pair<int,int> P;
+typedef pair<int, int> P;
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<ll> vll;
@@ -26,90 +26,95 @@ typedef vector<ll> vll;
 #define sz(x) ((int)(x).size())
 #define fi first
 #define sec second
-#define SORT(x) sort((x).begin(),(x).end())
-#define all(x) (x).begin(),(x).end()
-#define EQ(a,b) (abs((a)-(b))<EPS)
+#define SORT(x) sort((x).begin(), (x).end())
+#define all(x) (x).begin(), (x).end()
+#define EQ(a, b) (abs((a) - (b)) < EPS)
 #define MAX_N 100000
 #define MAX_LOG_V 20
 vector<int> g[MAX_N];
-int N,Q,root=0;
+int N, Q, root = 0;
 int parent[MAX_LOG_V][MAX_N];
 int depth[MAX_N];
-void dfs(int v,int p,int d){
-	depth[v]=d;
-	parent[0][v]=p;
-	for(int i=0;i<g[v].size();i++){
-		if(g[v][i]!=p){
-			dfs(g[v][i],v,d+1);
-		}
-	}
-	return;
+void dfs(int v, int p, int d) {
+  depth[v] = d;
+  parent[0][v] = p;
+  for (int i = 0; i < g[v].size(); i++) {
+    if (g[v][i] != p) {
+      dfs(g[v][i], v, d + 1);
+    }
+  }
+  return;
 }
 /*
 struct state{
-	int v,p,d;
-	state(int v,int p,int d):v(v),p(p),d(d){};
+        int v,p,d;
+        state(int v,int p,int d):v(v),p(p),d(d){};
 };
 void dfs(){
-	stack<state> st;
-	st.push(state(0,-1,0));
-	while(!st.empty()){
-		state now = st.top();
-		st.pop();
-		int v = now.v,p = now.p,d = now.d;
-		depth[v]=d;
-		parent[0][v]=p;
-		for(int i=0;i<g[v].size();i++){
-			edge e = g[v][i];
-			if(e.to!=p){
-				st.push(state(e.to,v,d+1));
-			}
-		}
-	}
-	return;
+        stack<state> st;
+        st.push(state(0,-1,0));
+        while(!st.empty()){
+                state now = st.top();
+                st.pop();
+                int v = now.v,p = now.p,d = now.d;
+                depth[v]=d;
+                parent[0][v]=p;
+                for(int i=0;i<g[v].size();i++){
+                        edge e = g[v][i];
+                        if(e.to!=p){
+                                st.push(state(e.to,v,d+1));
+                        }
+                }
+        }
+        return;
 }*/
-void init(){
-	dfs(root,-1,0);
-	//dfs();
-	for(int i=0;i<MAX_LOG_V-1;i++){
-		for(int v=0;v<N;v++){
-			if(parent[i][v]==-1)parent[i+1][v]=-1;
-			else parent[i+1][v]=parent[i][parent[i][v]];
-		}
-	}
-	return;
+void init() {
+  dfs(root, -1, 0);
+  // dfs();
+  for (int i = 0; i < MAX_LOG_V - 1; i++) {
+    for (int v = 0; v < N; v++) {
+      if (parent[i][v] == -1)
+        parent[i + 1][v] = -1;
+      else
+        parent[i + 1][v] = parent[i][parent[i][v]];
+    }
+  }
+  return;
 }
-int lca(int u,int v){
-	if(depth[u]>depth[v])swap(u,v);
-	for(int i=MAX_LOG_V-1;i>=0;i--){
-		if(((depth[v]-depth[u])>>i)&1)v=parent[i][v];
-	}
-	if(u==v)return u;
-	for(int i=MAX_LOG_V-1;i>=0;i--){
-		if(parent[i][u]!=parent[i][v]){
-			u=parent[i][u];
-			v=parent[i][v];
-		}
-	}
-	return parent[0][u];
+int lca(int u, int v) {
+  if (depth[u] > depth[v])
+    swap(u, v);
+  for (int i = MAX_LOG_V - 1; i >= 0; i--) {
+    if (((depth[v] - depth[u]) >> i) & 1)
+      v = parent[i][v];
+  }
+  if (u == v)
+    return u;
+  for (int i = MAX_LOG_V - 1; i >= 0; i--) {
+    if (parent[i][u] != parent[i][v]) {
+      u = parent[i][u];
+      v = parent[i][v];
+    }
+  }
+  return parent[0][u];
 }
-int main(){
-	cin >> N;
-	for(int i=0;i<N;i++){
-		int k;
-		cin >> k;
-		for(int j=0;j<k;j++){
-			int c;
-			cin >> c;
-			g[i].pb(c);
-		}
-	}
-	init();
-	cin >> Q;
-	for(int i=0;i<Q;i++){
-		int u,v;
-		cin >> u >> v;
-		cout << lca(u,v) << endl;
-	}
-	return 0;
+int main() {
+  cin >> N;
+  for (int i = 0; i < N; i++) {
+    int k;
+    cin >> k;
+    for (int j = 0; j < k; j++) {
+      int c;
+      cin >> c;
+      g[i].pb(c);
+    }
+  }
+  init();
+  cin >> Q;
+  for (int i = 0; i < Q; i++) {
+    int u, v;
+    cin >> u >> v;
+    cout << lca(u, v) << endl;
+  }
+  return 0;
 }

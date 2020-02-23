@@ -1,19 +1,19 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
+#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <queue>
-#include <stack>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <set>
-#include <iomanip>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <vector>
 using namespace std;
 typedef long long ll;
 typedef vector<int> vi;
@@ -26,74 +26,55 @@ typedef vector<ll> vll;
 #define sz(x) ((int)(x).size())
 #define fi first
 #define sec second
-#define SORT(x) sort((x).begin(),(x).end())
-#define all(x) (x).begin(),(x).end()
-#define EQ(a,b) (abs((a)-(b))<EPS)
-double add(double a,double b)
-{
-	if(abs(a+b)<eps*(abs(a)+abs(b)))return 0;
-	return a+b;
+#define SORT(x) sort((x).begin(), (x).end())
+#define all(x) (x).begin(), (x).end()
+#define EQ(a, b) (abs((a) - (b)) < EPS)
+double add(double a, double b) {
+  if (abs(a + b) < eps * (abs(a) + abs(b)))
+    return 0;
+  return a + b;
 }
-struct P
-{
-	double x,y;
-	P (){}
-	P(double x,double y):x(x),y(y){}
-	P operator +(P p)
-	{
-		return P(add(x,p.x),add(y,p.y));
-	}
-	P operator -(P p)
-	{
-		return P(add(x,-p.x),add(y,-p.y));
-	}
-	P operator *(double d)
-	{
-		return P(x*d,y*d);
-	}
-	double dot(P p)
-	{
-		return add(x*p.x,y*p.y);
-	}
-	double det(P p)
-	{
-		return add(x*p.y,-y*p.x);
-	}
+struct P {
+  double x, y;
+  P() {}
+  P(double x, double y) : x(x), y(y) {}
+  P operator+(P p) { return P(add(x, p.x), add(y, p.y)); }
+  P operator-(P p) { return P(add(x, -p.x), add(y, -p.y)); }
+  P operator*(double d) { return P(x * d, y * d); }
+  double dot(P p) { return add(x * p.x, y * p.y); }
+  double det(P p) { return add(x * p.y, -y * p.x); }
 };
-bool comp(const P& p,const P& q)
-{
-	if(p.x!=q.x)return p.x<q.x;
-	return p.y<q.y;
+bool comp(const P &p, const P &q) {
+  if (p.x != q.x)
+    return p.x < q.x;
+  return p.y < q.y;
 }
-double dist(P p,P q)
-{
-	return sqrt((p-q).dot(p-q));
-}
-int main()
-{
-	vector<P> cv;
-	int n;
-	cin >> n;
-	for(int i=0;i<n;i++)
-	{
-		P a;
-		cin >> a.x >> a.y;
-		cv.pb(a);
-	}
-	int i=0,j=0;
-	for(int k=0;k<n;k++)
-	{
-		if(!comp(cv[i],cv[k]))i=k;
-		if(comp(cv[j],cv[k]))j=k;
-	}
-	int si=i,sj=j;
-	double ans=0;
-	while(i!=sj||j!=si)
-	{
-		ans=max(ans,dist(cv[i],cv[j]));
-		if((cv[(i+1)%n]-cv[i]).det(cv[(j+1)%n]-cv[j])<0)i=(i+1)%n;
-		else j=(j+1)%n;
-	}
-	cout << setprecision(16) << ans << endl;
-	return 0;
+double dist(P p, P q) { return sqrt((p - q).dot(p - q)); }
+int main() {
+  vector<P> cv;
+  int n;
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    P a;
+    cin >> a.x >> a.y;
+    cv.pb(a);
+  }
+  int i = 0, j = 0;
+  for (int k = 0; k < n; k++) {
+    if (!comp(cv[i], cv[k]))
+      i = k;
+    if (comp(cv[j], cv[k]))
+      j = k;
+  }
+  int si = i, sj = j;
+  double ans = 0;
+  while (i != sj || j != si) {
+    ans = max(ans, dist(cv[i], cv[j]));
+    if ((cv[(i + 1) % n] - cv[i]).det(cv[(j + 1) % n] - cv[j]) < 0)
+      i = (i + 1) % n;
+    else
+      j = (j + 1) % n;
+  }
+  cout << setprecision(16) << ans << endl;
+  return 0;
 }
