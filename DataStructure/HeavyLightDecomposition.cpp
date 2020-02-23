@@ -1,21 +1,7 @@
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
-#include <cmath>
-#include <complex>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <numeric>
-#include <vector>
-#include <queue>
-#include <stack>
-#include <functional>
-#include <iostream>
-#include <map>
-#include <set>
-#include <cassert>
+#include <bits/stdc++.h>
+
 using namespace std;
+
 typedef pair<int,int> P;
 typedef long long ll;
 typedef vector<int> vi;
