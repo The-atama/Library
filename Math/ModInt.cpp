@@ -5,7 +5,7 @@ using namespace std;
 typedef long long ll;
 
 namespace Math {
-template <int MOD> // if inv is needed, this shold be prime.
+template <int MOD>  // if inv is needed, this shold be prime.
 struct ModInt {
   ll val;
   ModInt() : val(0ll) {}
@@ -19,13 +19,11 @@ struct ModInt {
   ModInt operator-() const { return ModInt(MOD - val); }
   ModInt inv() const { return this->pow(MOD - 2); }
   ModInt &operator+=(const ModInt &x) {
-    if ((val += x.val) >= MOD)
-      val -= MOD;
+    if ((val += x.val) >= MOD) val -= MOD;
     return *this;
   }
   ModInt &operator-=(const ModInt &x) {
-    if ((val += MOD - x.val) >= MOD)
-      val -= MOD;
+    if ((val += MOD - x.val) >= MOD) val -= MOD;
     return *this;
   }
   ModInt &operator*=(const ModInt &x) {
@@ -51,8 +49,7 @@ struct ModInt {
     auto res = ModInt(1ll);
     auto b = *this;
     while (x) {
-      if (x & 1)
-        res *= b;
+      if (x & 1) res *= b;
       x >>= 1;
       b *= b;
     }
@@ -60,11 +57,11 @@ struct ModInt {
   }
 };
 
-template <int MOD> ModInt<MOD> pow(ModInt<MOD> a, ll x) {
+template <int MOD>
+ModInt<MOD> pow(ModInt<MOD> a, ll x) {
   ModInt<MOD> res = ModInt<MOD>(1ll);
   while (x) {
-    if (x & 1)
-      res *= a;
+    if (x & 1) res *= a;
     x >>= 1;
     a *= a;
   }
@@ -87,15 +84,14 @@ void init(int SIZE) {
   inv.resize(SIZE + 1);
   facinv.resize(SIZE + 1);
   fac[0] = inv[1] = facinv[0] = mint(1ll);
-  for (int i = 1; i <= SIZE; i++)
-    fac[i] = fac[i - 1] * mint(i);
+  for (int i = 1; i <= SIZE; i++) fac[i] = fac[i - 1] * mint(i);
   for (int i = 2; i <= SIZE; i++)
     inv[i] = mint(0ll) - mint(MOD / i) * inv[MOD % i];
-  for (int i = 1; i <= SIZE; i++)
-    facinv[i] = facinv[i - 1] * inv[i];
+  for (int i = 1; i <= SIZE; i++) facinv[i] = facinv[i - 1] * inv[i];
   return;
 }
-template <class T> int digit(T x) {
+template <class T>
+int digit(T x) {
   int res = 0;
   while (x) {
     x /= T(10);
@@ -103,7 +99,8 @@ template <class T> int digit(T x) {
   }
   return res;
 }
-template <class T> int digit_sum(T x) {
+template <class T>
+int digit_sum(T x) {
   int res = 0;
   while (x) {
     res += x % 10;
@@ -111,13 +108,14 @@ template <class T> int digit_sum(T x) {
   }
   return res;
 }
-template <class T> T gcd(T x, T y) {
+template <class T>
+T mygcd(T x, T y) {
   if (y == T(0))
     return x;
   else
-    return gcd(y, x % y);
+    return mygcd(y, x % y);
 }
-} // namespace Math
+}  // namespace Math
 int main() {
   Math::init(100100);
   return 0;

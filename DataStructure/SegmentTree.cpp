@@ -2,8 +2,8 @@
 
 using namespace std;
 
-template <class D> struct SegmentTree {
-
+template <class D>
+struct SegmentTree {
   using DMerger = function<D(D, D)>;
   int length;
   vector<D> seg;
@@ -14,18 +14,15 @@ template <class D> struct SegmentTree {
   SegmentTree(int n, const DMerger dm, const D &d_unit)
       : dm(dm), d_unit(d_unit) {
     length = 1;
-    while (length < n)
-      length <<= 1;
+    while (length < n) length <<= 1;
     seg.assign(2 * length, d_unit);
   }
   SegmentTree(vector<D> vec, const DMerger dm, const D &d_unit)
       : dm(dm), d_unit(d_unit) {
     length = 1;
-    while (length < vec.size())
-      length <<= 1;
+    while (length < vec.size()) length <<= 1;
     seg.assign(2 * length, d_unit);
-    for (int i = 0; i < vec.size(); i++)
-      seg[length - 1 + i] = vec[i];
+    for (int i = 0; i < vec.size(); i++) seg[length - 1 + i] = vec[i];
     for (int i = length - 2; i >= 0; i--)
       seg[i] = dm(seg[i * 2 + 1], seg[i * 2 + 2]);
   }
@@ -51,6 +48,7 @@ template <class D> struct SegmentTree {
     }
   }
   D query(int a, int b) { return query(a, b, 0, 0, length); }
+  D get_point(int x) { return seg[length - 1 + x]; }
 };
 
 int main() {
