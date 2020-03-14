@@ -28,8 +28,7 @@ struct SuffixArray {
       tmp[sa[0]] = 0;
       for (int i = 1; i <= n; i++)
         tmp[sa[i]] = tmp[sa[i - 1]] + (compare_sa(sa[i - 1], sa[i]) ? 1 : 0);
-      for (int i = 0; i <= n; i++)
-        rank[i] = tmp[i];
+      for (int i = 0; i <= n; i++) rank[i] = tmp[i];
     }
   }
   size_t size() const { return s.size(); }
@@ -55,54 +54,20 @@ struct LongestCommonPrefix {
     int n = sa.size();
     lcp.resize(sa.size() + 1);
     rank.resize(sa.size() + 1);
-    for (int i = 0; i <= sa.size(); i++) {
-      rank[sa[i]] = i;
-    }
+    for (int i = 0; i <= sa.size(); i++) { rank[sa[i]] = i; }
     int h = 0;
     lcp[0] = 0;
     for (int i = 0; i < sa.size(); i++) {
       int j = sa[rank[i] - 1];
-      if (h > 0)
-        h--;
+      if (h > 0) h--;
       for (; i + h < n && j + h < n; h++)
-        if (sa.s[i + h] != sa.s[j + h])
-          break;
+        if (sa.s[i + h] != sa.s[j + h]) break;
       lcp[rank[i] - 1] = h;
     }
   }
   int operator[](int id) const {
     assert(id >= 0 && id < lcp.size());
     return lcp[id];
-  }
-};
-
-struct Zalgorithm {
-  string s;
-  vector<int> Z;
-  explicit Zalgorithm(string s) : s(s) {
-    Z.resize(s.size() + 1);
-    Z[0] = s.size();
-    int i = 1, j = 0;
-    while (i < s.size()) {
-      while (i + j < s.size() && s[j] == s[i + j])
-        j++;
-      Z[i] = j;
-      if (j == 0) {
-        i++;
-        continue;
-      }
-      int k = 1;
-      while (i + k < s.size() && k + Z[k] < j) {
-        Z[i + k] = Z[k];
-        ++k;
-      }
-      i += k;
-      j -= k;
-    }
-  }
-  int operator[](int id) const {
-    assert(id >= 0 && id < Z.size());
-    return Z[id];
   }
 };
 
@@ -113,7 +78,7 @@ struct BurrowsWheelerTransform {
     bwt.resize(sa.size() + 1);
     for (int i = 0; i < bwt.size(); i++) {
       if (sa[i] == 0)
-        bwt[i] = (char)7; // dummy
+        bwt[i] = (char)7;  // dummy
       else
         bwt[i] = sa.s[sa[i] - 1];
     }

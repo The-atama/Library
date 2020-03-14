@@ -6,10 +6,10 @@ struct FullyIndexableDictionary {
   static const int bigBlockSize = 1024;
   static constexpr int smallInBig = bigBlockSize / smallBlockSize;
 
-  vector<uint16_t> bit; // raw data
+  vector<uint16_t> bit;  // raw data
 
-  vector<uint32_t> bigBlockAcc;           // not succinct, optimal : 22 bit
-  vector<vector<uint16_t>> smallBlockAcc; // not succinct, optimal : 10 bit
+  vector<uint32_t> bigBlockAcc;            // not succinct, optimal : 22 bit
+  vector<vector<uint16_t>> smallBlockAcc;  // not succinct, optimal : 10 bit
 
   int length;
   int bigBlockNum;
@@ -81,8 +81,7 @@ struct FullyIndexableDictionary {
   // attention : num is 0-indexed
   int select(int b, int num) const {
     assert(is_built);
-    if (num < 0 || num >= rank(b, length))
-      return -1;
+    if (num < 0 || num >= rank(b, length)) return -1;
     int l = 0, r = length;
     while (r - l > 1) {
       int mid = (l + r) / 2;
@@ -99,7 +98,8 @@ struct FullyIndexableDictionary {
 
 // T must be unsigned type
 
-template <class T, int LOG> struct WaveletMatrix {
+template <class T, int LOG>
+struct WaveletMatrix {
   int length;
   FullyIndexableDictionary mat[LOG];
   int zeroNum[LOG];
@@ -123,8 +123,7 @@ template <class T, int LOG> struct WaveletMatrix {
       mat[i].build();
       zeroNum[i] = lp;
       // cout << lp << ' ' << rp << endl;
-      for (int j = 0; j < rp; j++)
-        lv[lp + j] = rv[j];
+      for (int j = 0; j < rp; j++) lv[lp + j] = rv[j];
       swap(data, lv);
       /*cout << zeroNum[i] << endl;
       for(int j=0;j<length;j++){
@@ -161,12 +160,11 @@ template <class T, int LOG> struct WaveletMatrix {
   // position of num-th v
   // id is 0-indexed
   int select(T v, int num) {
-    rank(v, length); // store path in buf
+    rank(v, length);  // store path in buf
     for (int i = LOG - 1; i >= 0; i--) {
       int bit = (v >> (LOG - i - 1)) & (T(1));
       num = mat[i].select(bit, num, buf1[i]);
-      if (num >= buf2[i] || num < 0)
-        return -1;
+      if (num >= buf2[i] || num < 0) return -1;
       num -= buf1[i];
     }
     return num;
@@ -176,8 +174,7 @@ template <class T, int LOG> struct WaveletMatrix {
 
   // k-th largest value
   T quantile(int l, int r, int k) {
-    if (r - l <= k || k < 0)
-      return -1;
+    if (r - l <= k || k < 0) return -1;
     T res = T(0);
     for (int i = 0; i < LOG; i++) {
       int lp = mat[i].rank(1, l);
@@ -202,16 +199,12 @@ template <class T, int LOG> struct WaveletMatrix {
 
   // auxiliary function for range_freq
   int freq_dfs(int depth, int l, int r, T val, T low, T high) {
-    if (l == r)
-      return 0;
-    if (depth == LOG)
-      return (low <= val && val < high) ? r - l : 0;
+    if (l == r) return 0;
+    if (depth == LOG) return (low <= val && val < high) ? r - l : 0;
     T right_val = ((T(1) << (LOG - depth - 1)) | val);
     T right_most = (((T(1) << (LOG - depth - 1)) - 1) | right_val);
-    if (right_most < low || high <= val)
-      return 0;
-    if (low <= val && right_most < high)
-      return r - l;
+    if (right_most < low || high <= val) return 0;
+    if (low <= val && right_most < high) return r - l;
     int lp = mat[depth].rank(1, l);
     int rp = mat[depth].rank(1, r);
     int lch = freq_dfs(depth + 1, l - lp, r - rp, val, low, high);
@@ -231,8 +224,7 @@ template <class T, int LOG> struct WaveletMatrix {
       buf1[i] = l;
       buf2[i] = r;
       int bit = (v >> (LOG - i - 1)) & (T(1));
-      if (bit)
-        lessNum += (r - mat[i].rank(bit, r)) - (l - mat[i].rank(bit, l));
+      if (bit) lessNum += (r - mat[i].rank(bit, r)) - (l - mat[i].rank(bit, l));
       l = mat[i].rank(bit, l) + zeroNum[i] * bit;
       r = mat[i].rank(bit, r) + zeroNum[i] * bit;
     }
@@ -291,8 +283,7 @@ struct SuffixArray {
       tmp[sa[0]] = 0;
       for (int i = 1; i <= n; i++)
         tmp[sa[i]] = tmp[sa[i - 1]] + (compare_sa(sa[i - 1], sa[i]) ? 1 : 0);
-      for (int i = 0; i <= n; i++)
-        rank[i] = tmp[i];
+      for (int i = 0; i <= n; i++) rank[i] = tmp[i];
     }
   }
   size_t size() const { return s.size(); }
@@ -317,18 +308,14 @@ struct LongestCommonPrefix {
     int n = sa.size();
     lcp.resize(sa.size() + 1);
     rank.resize(sa.size() + 1);
-    for (int i = 0; i <= sa.size(); i++) {
-      rank[sa[i]] = i;
-    }
+    for (int i = 0; i <= sa.size(); i++) { rank[sa[i]] = i; }
     int h = 0;
     lcp[0] = 0;
     for (int i = 0; i < sa.size(); i++) {
       int j = sa[rank[i] - 1];
-      if (h > 0)
-        h--;
+      if (h > 0) h--;
       for (; i + h < n && j + h < n; h++)
-        if (sa.s[i + h] != sa.s[j + h])
-          break;
+        if (sa.s[i + h] != sa.s[j + h]) break;
       lcp[rank[i] - 1] = h;
     }
   }
@@ -345,7 +332,7 @@ struct BurrowsWheelerTransform {
     bwt.resize(sa.size() + 1);
     for (int i = 0; i < bwt.size(); i++) {
       if (sa[i] == 0)
-        bwt[i] = (char)7; // dummy
+        bwt[i] = (char)7;  // dummy
       else
         bwt[i] = sa.s[sa[i] - 1];
     }
@@ -357,15 +344,14 @@ struct BurrowsWheelerTransform {
 pair<int, int> searchFMIndex(SuffixArray &sa,
                              WaveletMatrix<unsigned char, 8> &wm,
                              vector<int> &lessCount, string t) {
-  int l = 0, r = sa.size() + 1; // because of dummy character
+  int l = 0, r = sa.size() + 1;  // because of dummy character
   for (int i = 0; i < t.size(); i++) {
     unsigned char c = t[t.size() - 1 - i];
     // cout << wm.rank(c,l) << ' ' << wm.rank(c,r) << endl;
     l = lessCount[c] + wm.rank(c, l);
     r = lessCount[c] + wm.rank(c, r);
     // cout << "wavelet " << l << ' ' << r << endl;
-    if (l >= r)
-      return make_pair(-1, -1);
+    if (l >= r) return make_pair(-1, -1);
   }
   return make_pair(l, r - 1);
 }
@@ -374,16 +360,12 @@ pair<int, int> contain(string s, string t) {
   SuffixArray sa(s);
   BurrowsWheelerTransform bwt(sa);
   vector<unsigned char> bw;
-  for (int i = 0; i < bwt.size(); i++) {
-    bw.push_back((unsigned char)bwt[i]);
-  }
+  for (int i = 0; i < bwt.size(); i++) { bw.push_back((unsigned char)bwt[i]); }
   WaveletMatrix<unsigned char, 8> wm(bw);
 
-  s += ((char)7); // dummy
+  s += ((char)7);  // dummy
   vector<int> lessCount(256);
-  for (int i = 0; i < s.size(); i++) {
-    lessCount[s[i] + 1]++;
-  }
+  for (int i = 0; i < s.size(); i++) { lessCount[s[i] + 1]++; }
   for (int i = 1; i < lessCount.size(); i++) {
     lessCount[i] += lessCount[i - 1];
   }
@@ -399,8 +381,7 @@ int main() {
   cout << FID.select(1, 2) << endl;
   string s = "abracadabra";
   vector<unsigned char> v;
-  for (int i = 0; i < s.size(); i++)
-    v.push_back((unsigned char)s[i]);
+  for (int i = 0; i < s.size(); i++) v.push_back((unsigned char)s[i]);
   WaveletMatrix<unsigned char, 8> wm(v);
   cout << wm.rangefreq(2, 8, 'b', 'r') << endl;
   cout << contain("abra", "br").first << endl;

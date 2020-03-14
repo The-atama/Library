@@ -79,6 +79,7 @@ ModInt<MOD> nCr(int n, int r) {
   assert(!(n < 0 || r < 0));
   return fac[n] * facinv[r] * facinv[n - r];
 }
+
 void init(int SIZE) {
   fac.resize(SIZE + 1);
   inv.resize(SIZE + 1);
@@ -90,6 +91,7 @@ void init(int SIZE) {
   for (int i = 1; i <= SIZE; i++) facinv[i] = facinv[i - 1] * inv[i];
   return;
 }
+
 template <class T>
 int digit(T x) {
   int res = 0;
@@ -99,6 +101,7 @@ int digit(T x) {
   }
   return res;
 }
+
 template <class T>
 int digit_sum(T x) {
   int res = 0;
@@ -108,12 +111,19 @@ int digit_sum(T x) {
   }
   return res;
 }
+
 template <class T>
 T mygcd(T x, T y) {
   if (y == T(0))
     return x;
   else
     return mygcd(y, x % y);
+}
+
+template <class T>
+T mylcm(T x, T y) {
+  assert(x / mygcd(x, y) <= numeric_limits<T>::max() / y);
+  return x / mygcd(x, y) * y;
 }
 }  // namespace Math
 int main() {
