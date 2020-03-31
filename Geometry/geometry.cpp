@@ -5,9 +5,7 @@ typedef long long ll;
 #define pb push_back
 #define mp make_pair
 #define eps 1e-10
-#define Points vector<Point>
 #define INF 2000000000
-#define DOUBLE_INF 1e50
 #define sq(x) ((x) * (x))
 #define fi first
 #define sec second
@@ -17,9 +15,11 @@ typedef long long ll;
 // Geometry Library
 // written by okuraofvegetable
 
+#define DOUBLE_INF 1e50
+#define Points vector<Point>
+
 inline double add(double a, double b) {
-  if (abs(a + b) < eps * (abs(a) + abs(b)))
-    return 0;
+  if (abs(a + b) < eps * (abs(a) + abs(b))) return 0;
   return a + b;
 }
 
@@ -38,9 +38,9 @@ struct Point {
   double norm2() { return x * x + y * y; }
   double dist(Point p) { return ((*this) - p).norm(); }
   double dist2(Point p) { return sq(x - p.x) + sq(y - p.y); }
-  double arg() { return atan2(y, x); }             // [-PI,PI]
-  double arg(Vector v) { return v.arg() - arg(); } // henkaku
-  double angle(Vector v) {                         // [0,PI]
+  double arg() { return atan2(y, x); }              // [-PI,PI]
+  double arg(Vector v) { return v.arg() - arg(); }  // henkaku
+  double angle(Vector v) {                          // [0,PI]
     return acos(cos(arg(v)));
   }
   Vector normalize() { return (*this) * (1.0 / norm()); }
@@ -52,6 +52,10 @@ struct Point {
 
   // signed area of triange (0,0) (x,y) (p.x,p.y)
   double area(Point p) { return (x * p.y - p.x * y) / 2.0; }
+  friend istream &operator>>(istream &is, Point &p) { return is >> p; }
+  friend ostream &operator<<(ostream &os, const Point &p) {
+    return os << '(' << p.x << ',' << p.y << ')';
+  }
 };
 // direction a -> b -> c
 // verified AOJ CGL_1_C
@@ -66,15 +70,11 @@ Vector polar(double len, double arg) {
 int ccw(Point a, Point b, Point c) {
   Vector p = b - a;
   Vector q = c - a;
-  if (p.det(q) > 0.0)
-    return COUNTER_CLOCKWISE; // counter clockwise
-  if (p.det(q) < 0.0)
-    return CLOCKWISE; // clockwise
-  if (p.dot(q) < 0.0)
-    return ONLINE_BACK; // c--a--b online_back
-  if (p.norm() < q.norm())
-    return ONLINE_FRONT; // a--b--c online_front
-  return ON_SEGMENT;     // a--c--b on_segment
+  if (p.det(q) > 0.0) return COUNTER_CLOCKWISE;  // counter clockwise
+  if (p.det(q) < 0.0) return CLOCKWISE;          // clockwise
+  if (p.dot(q) < 0.0) return ONLINE_BACK;        // c--a--b online_back
+  if (p.norm() < q.norm()) return ONLINE_FRONT;  // a--b--c online_front
+  return ON_SEGMENT;                             // a--c--b on_segment
 }
 struct Line {
   Point a, b;
@@ -109,6 +109,10 @@ struct Line {
     else
       return false;
   }
+  friend istream &operator>>(istream &is, Line &l) { return is >> l.a >> l.b; }
+  friend ostream &operator<<(ostream &os, const Line &l) {
+    return os << l.a << " -> " << l.b;
+  }
 };
 struct Segment {
   Point a, b;
@@ -121,10 +125,8 @@ struct Segment {
   // verified AOJ CGL_2_B
   bool is_intersect(Segment s) {
     if (line().is_parallel(s.line())) {
-      if (on(s.a) || on(s.b))
-        return true;
-      if (s.on(a) || s.on(b))
-        return true;
+      if (on(s.a) || on(s.b)) return true;
+      if (s.on(a) || s.on(b)) return true;
       return false;
     }
     Point p = line().intersection(s.line());
@@ -150,20 +152,24 @@ struct Segment {
   double distance(Point p) {
     double res = DOUBLE_INF;
     Point q = line().projection(p);
-    if (on(q))
-      res = min(res, p.dist(q));
+    if (on(q)) res = min(res, p.dist(q));
     res = min(res, min(p.dist(a), p.dist(b)));
     return res;
   }
   double distance(Segment s) {
-    if (is_intersect(s))
-      return 0.0;
+    if (is_intersect(s)) return 0.0;
     double res = DOUBLE_INF;
     res = min(res, s.distance(a));
     res = min(res, s.distance(b));
     res = min(res, this->distance(s.a));
     res = min(res, this->distance(s.b));
     return res;
+  }
+  friend istream &operator>>(istream &is, Segment &s) {
+    return is >> s.a >> s.b;
+  }
+  friend ostream &operator<<(ostream &os, const Segment &s) {
+    return os << s.a << " -> " << s.b;
   }
 };
 
@@ -199,15 +205,12 @@ int contained(Polygon &pol, Point p) {
   int cnt = 0;
   for (int i = 0; i < n; i++) {
     Segment e = Segment(pol[i], pol[(i + 1) % n]);
-    if (e.on(p))
-      return ON;
+    if (e.on(p)) return ON;
     Vector a = pol[i] - p;
     Vector b = pol[(i + 1) % n] - p;
-    if (a.y > b.y)
-      swap(a, b);
+    if (a.y > b.y) swap(a, b);
     if (a.y <= 0.0 && b.y > 0.0) {
-      if (a.det(b) < 0.0)
-        cnt++;
+      if (a.det(b) < 0.0) cnt++;
     }
   }
   if ((cnt & 1) == 1)
@@ -234,13 +237,11 @@ Polygon convex_hull(vector<Point> ps) {
   int n = ps.size();
   Polygon qs(2 * n);
   for (int i = 0; i < n; i++) {
-    while (k > 1 && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0)
-      k--;
+    while (k > 1 && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0) k--;
     qs[k++] = ps[i];
   }
   for (int i = n - 2, t = k; i >= 0; i--) {
-    while (k > t && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0)
-      k--;
+    while (k > t && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0) k--;
     qs[k++] = ps[i];
   }
   qs.resize(k - 1);
@@ -252,10 +253,8 @@ double convex_diameter(Polygon &cv) {
   int i = 0, j = 0;
   int n = cv.size();
   for (int k = 0; k < n; k++) {
-    if (!comp(cv[i], cv[k]))
-      i = k;
-    if (comp(cv[j], cv[k]))
-      j = k;
+    if (!comp(cv[i], cv[k])) i = k;
+    if (comp(cv[j], cv[k])) j = k;
   }
   int si = i, sj = j;
   double res = 0.0;
@@ -275,22 +274,20 @@ Polygon convex_cut(Polygon &cv, Line l) {
   Polygon left;
   for (int i = 0; i < n; i++) {
     Segment e = Segment(cv[i], cv[(i + 1) % n]);
-    if (ccw(l.a, l.b, cv[i]) != CLOCKWISE)
-      left.pb(cv[i]);
+    if (ccw(l.a, l.b, cv[i]) != CLOCKWISE) left.pb(cv[i]);
     if (e.is_intersect(l)) {
-      if (!e.line().is_parallel(l)) {
-        left.pb(e.line().intersection(l));
-      }
+      if (!e.line().is_parallel(l)) { left.pb(e.line().intersection(l)); }
     }
   }
   return left;
 }
 // distance between closest pair
 // verified CGL_5_A
-bool comp_y(const Point &p, const Point &q) { return p.y < q.y; }
+bool comp_y(const Point &p, const Point &q) {
+  return p.y < q.y;
+}
 double closest_pair(vector<Point>::iterator a, int n) {
-  if (n <= 1)
-    return DOUBLE_INF;
+  if (n <= 1) return DOUBLE_INF;
   int m = n / 2;
   double x = (a + m)->x;
   double d = min(closest_pair(a, m), closest_pair(a + m, n - m));
@@ -299,13 +296,11 @@ double closest_pair(vector<Point>::iterator a, int n) {
   for (int i = 0; i < n; i++) {
     double ax = (a + i)->x;
     double ay = (a + i)->y;
-    if (abs(ax - x) >= d)
-      continue;
+    if (abs(ax - x) >= d) continue;
     for (int j = 0; j < b.size(); j++) {
       double dx = ax - b[b.size() - 1 - j].x;
       double dy = ay - b[b.size() - 1 - j].y;
-      if (dy >= d)
-        break;
+      if (dy >= d) break;
       d = min(d, sqrt(dx * dx + dy * dy));
     }
     b.pb(*(a + i));
@@ -324,9 +319,9 @@ double closest_pair(vector<Point> a) {
 // the number of common tangent lines
 enum {
   INCLUDE,
-  INSCRIBED, // in japanese "naisetsu"
+  INSCRIBED,  // in japanese "naisetsu"
   INTERSECT,
-  CIRCUMSCRIBED, // in japanese "gaisetsu"
+  CIRCUMSCRIBED,  // in japanese "gaisetsu"
   NOT_CROSS,
 };
 
@@ -339,10 +334,8 @@ struct Circle {
   // verified AOJ CGL_7_A
   int is_intersect(Circle c) {
     double cd = center.dist(c.center);
-    if (EQ(cd, r + c.r))
-      return CIRCUMSCRIBED;
-    if (EQ(cd, abs(r - c.r)))
-      return INSCRIBED;
+    if (EQ(cd, r + c.r)) return CIRCUMSCRIBED;
+    if (EQ(cd, abs(r - c.r))) return INSCRIBED;
     if (cd > r + c.r)
       return NOT_CROSS;
     else if (cd > abs(r - c.r))
@@ -368,8 +361,7 @@ struct Circle {
     Points tmp = intersection(s.line());
     Points res;
     for (int i = 0; i < tmp.size(); i++) {
-      if (s.on(tmp[i]))
-        res.pb(tmp[i]);
+      if (s.on(tmp[i])) res.pb(tmp[i]);
     }
     return res;
   }
@@ -396,7 +388,7 @@ struct Circle {
   Points common_tangent(Circle c) {
     Points res;
     int state = is_intersect(c);
-    if (EQ(r, c.r)) { // radius of the two circles are same
+    if (EQ(r, c.r)) {  // radius of the two circles are same
       Point p = divide_rate(center, c.center, r, c.r);
       Vector v = (c.center - center).vert().normalize() * r;
       if (state == INCLUDE)
@@ -413,7 +405,7 @@ struct Circle {
         res.pb(center - v);
         res.pb(p);
         return res;
-      } else { // NOT_CROSS
+      } else {  // NOT_CROSS
         Points res = tangent(p);
         res.pb(center + v);
         res.pb(center - v);
@@ -433,11 +425,10 @@ struct Circle {
         res = tangent(q);
         res.pb(p);
         return res;
-      } else { // NOT_CROSS
+      } else {  // NOT_CROSS
         Points res = tangent(p);
         Points add = tangent(q);
-        for (int i = 0; i < add.size(); i++)
-          res.pb(add[i]);
+        for (int i = 0; i < add.size(); i++) res.pb(add[i]);
         return res;
       }
     }
@@ -469,8 +460,7 @@ struct Circle {
   double area_intersection_triangle(Point a, Point b) {
     Segment s = Segment(a, b);
     double res = abs((a - center).area(b - center));
-    if (EQ(res, 0.0))
-      return 0.0;
+    if (EQ(res, 0.0)) return 0.0;
     if (in(a) && !in(b)) {
       Point p = intersection(s)[0];
       Point q = intersection(Segment(center, b))[0];
@@ -495,8 +485,7 @@ struct Circle {
         res = (r * r * (a - center).angle(b - center) / 2.0);
       }
     }
-    if ((a - center).det(b - center) < 0.0)
-      res = -res;
+    if ((a - center).det(b - center) < 0.0) res = -res;
     return res;
   }
   // area of intersection between given polygon and
@@ -510,42 +499,21 @@ struct Circle {
     }
     return abs(res);
   }
+  friend istream &operator>>(istream &is, Circle &c) {
+    return is >> c.center >> c.r;
+  }
+  friend ostream &operator<<(ostream &os, const Circle &c) {
+    return os << c.center << " , rad: " << c.r;
+  }
 };
-
-// for input
-Point input_point() {
-  Point p;
-  cin >> p.x >> p.y;
-  return p;
-}
-Segment input_segment() {
-  Point a, b;
-  a = input_point();
-  b = input_point();
-  return Segment(a, b);
-}
-Line input_line() {
-  Point a, b;
-  a = input_point();
-  b = input_point();
-  return Line(a, b);
-}
-Circle input_circle() {
-  Point c = input_point();
-  double d;
-  cin >> d;
-  return Circle(c, d);
-}
 
 int main() {
   int n;
   double r;
   cin >> n >> r;
   Circle c = Circle(Point(0, 0), r);
-  Polygon pol;
-  for (int i = 0; i < n; i++) {
-    pol.pb(input_point());
-  }
+  Polygon pol(n);
+  for (int i = 0; i < n; i++) { cin >> pol[i]; }
   printf("%.12f\n", c.area_intersection_polygon(pol));
   return 0;
 }

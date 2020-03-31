@@ -9,26 +9,29 @@ typedef vector<ll> vll;
 #define pb push_back
 #define mp make_pair
 #define eps 1e-9
-#define INF 2000000000           // 2e9
-#define LLINF 1000000000000000ll // 1e15
+#define INF 2000000000            // 2e9
+#define LLINF 1000000000000000ll  // 1e15
 #define fi first
 #define sec second
 #define all(x) (x).begin(), (x).end()
 #define sq(x) ((x) * (x))
 #define dmp(x) cerr << #x << ": " << x << endl;
 
-template <class T> void chmin(T &a, const T &b) {
-  if (a > b)
-    a = b;
+template <class T>
+void chmin(T &a, const T &b) {
+  if (a > b) a = b;
 }
-template <class T> void chmax(T &a, const T &b) {
-  if (a < b)
-    a = b;
+template <class T>
+void chmax(T &a, const T &b) {
+  if (a < b) a = b;
 }
 
-template <class T> using MaxHeap = priority_queue<T>;
-template <class T> using MinHeap = priority_queue<T, vector<T>, greater<T>>;
-template <class T> vector<T> vect(int len, T elem) {
+template <class T>
+using MaxHeap = priority_queue<T>;
+template <class T>
+using MinHeap = priority_queue<T, vector<T>, greater<T>>;
+template <class T>
+vector<T> vect(int len, T elem) {
   return vector<T>(len, elem);
 }
 
@@ -37,21 +40,22 @@ ostream &operator<<(ostream &os, const pair<T, U> &p) {
   os << p.fi << ',' << p.sec;
   return os;
 }
-template <class T, class U> istream &operator>>(istream &is, pair<T, U> &p) {
+template <class T, class U>
+istream &operator>>(istream &is, pair<T, U> &p) {
   is >> p.fi >> p.sec;
   return is;
 }
-template <class T> ostream &operator<<(ostream &os, const vector<T> &vec) {
+template <class T>
+ostream &operator<<(ostream &os, const vector<T> &vec) {
   for (int i = 0; i < vec.size(); i++) {
     os << vec[i];
-    if (i + 1 < vec.size())
-      os << ' ';
+    if (i + 1 < vec.size()) os << ' ';
   }
   return os;
 }
-template <class T> istream &operator>>(istream &is, vector<T> &vec) {
-  for (int i = 0; i < vec.size(); i++)
-    is >> vec[i];
+template <class T>
+istream &operator>>(istream &is, vector<T> &vec) {
+  for (int i = 0; i < vec.size(); i++) is >> vec[i];
   return is;
 }
 void fastio() {
@@ -61,8 +65,8 @@ void fastio() {
 }
 
 // verify https://judge.yosupo.jp/submission/3607
-template <class D> struct PersistentSegmentTree {
-
+template <class D>
+struct PersistentSegmentTree {
   using DMerger = function<D(D, D)>;
   const DMerger dm;
   const D d_unit;
@@ -71,7 +75,7 @@ template <class D> struct PersistentSegmentTree {
   struct Node {
     D data;
     Node *lch, *rch;
-    Node(D data) : data(data), lch(nullptr), rch(nullptr) {} // Nil leaf node
+    Node(D data) : data(data), lch(nullptr), rch(nullptr) {}  // Nil leaf node
     Node(Node *lch, Node *rch, const D &data)
         : data(data), lch(lch), rch(rch) {}
   };
@@ -83,10 +87,8 @@ template <class D> struct PersistentSegmentTree {
 
   Node *merge(Node *lch, Node *rch) {
     // assert(lch!=nullptr || rch!=nullptr);
-    if (lch == nullptr)
-      return new Node(lch, rch, rch->data);
-    if (rch == nullptr)
-      return new Node(lch, rch, lch->data);
+    if (lch == nullptr) return new Node(lch, rch, rch->data);
+    if (rch == nullptr) return new Node(lch, rch, lch->data);
     return new Node(lch, rch, dm(lch->data, rch->data));
   }
 
@@ -113,12 +115,9 @@ template <class D> struct PersistentSegmentTree {
   }
 
   D query(Node *v, int a, int b, int l, int r) {
-    if (v == nullptr)
-      return d_unit;
-    if (r <= a || b <= l)
-      return d_unit;
-    if (a <= l && r <= b)
-      return v->data;
+    if (v == nullptr) return d_unit;
+    if (r <= a || b <= l) return d_unit;
+    if (a <= l && r <= b) return v->data;
     return dm(query(v->lch, a, b, l, (l + r) / 2),
               query(v->rch, a, b, (l + r) / 2, r));
   }
@@ -126,12 +125,9 @@ template <class D> struct PersistentSegmentTree {
   D query(Node *v, int a, int b) { return query(v, a, b, 0, length); }
 
   void show(Node *v, int depth = 0) {
-    if (v == nullptr) {
-      return;
-    }
+    if (v == nullptr) { return; }
     show(v->lch, depth + 1);
-    for (int i = 0; i < depth; i++)
-      cout << "  ";
+    for (int i = 0; i < depth; i++) cout << "  ";
     cout << v->data << endl;
     show(v->rch, depth + 1);
   }
@@ -159,10 +155,9 @@ vector<PersistentSegmentTree<ll>::Node *> roots;
 auto dm = [](ll a, ll b) { return a + b; };
 PersistentSegmentTree<ll> seg(1000000005, dm, 0ll);
 
-ll solve(int l, int r, int u) { // [l,r) less than u
+ll solve(int l, int r, int u) {  // [l,r) less than u
   int k = lower_bound(all(ps), Point(P(u, -1), -1)) - ps.begin();
-  if (k == 0)
-    return 0ll;
+  if (k == 0) return 0ll;
   return seg.query(roots[k - 1], l, r);
 }
 
