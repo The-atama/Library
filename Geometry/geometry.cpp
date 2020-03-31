@@ -10,13 +10,13 @@ typedef long long ll;
 #define fi first
 #define sec second
 #define all(x) (x).begin(), (x).end()
-#define EQ(a, b) (abs((a) - (b)) < eps)
 
 // Geometry Library
 // written by okuraofvegetable
 
 #define DOUBLE_INF 1e50
 #define Points vector<Point>
+#define EQ(a, b) (abs((a) - (b)) < eps)
 
 inline double add(double a, double b) {
   if (abs(a + b) < eps * (abs(a) + abs(b))) return 0;
@@ -45,14 +45,10 @@ struct Point {
   }
   Vector normalize() { return (*this) * (1.0 / norm()); }
   Point vert() { return Point(y, -x); }
-  void dump(const char *msg = "") {
-    printf("%s%.12f %.12f\n", msg, x, y);
-    return;
-  }
 
   // signed area of triange (0,0) (x,y) (p.x,p.y)
   double area(Point p) { return (x * p.y - p.x * y) / 2.0; }
-  friend istream &operator>>(istream &is, Point &p) { return is >> p; }
+  friend istream &operator>>(istream &is, Point &p) { return is >> p.x >> p.y; }
   friend ostream &operator<<(ostream &os, const Point &p) {
     return os << '(' << p.x << ',' << p.y << ')';
   }
