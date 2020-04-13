@@ -8,21 +8,19 @@ typedef long long ll;
 // constructor of T : T(1),T(0) must be unit of T
 // verified DDCC B
 // https://atcoder.jp/contests/ddcc2020-final/submissions/9941022
-template <class T> struct Matrix {
+template <class T>
+struct Matrix {
   int H, W;
   vector<vector<T>> elem;
   Matrix(int H, int W, T val = T(0)) : H(H), W(W) {
     elem.resize(H);
-    for (int i = 0; i < H; i++)
-      elem[i].assign(W, val);
+    for (int i = 0; i < H; i++) elem[i].assign(W, val);
   }
   Matrix(const vector<vector<T>> &m)
       : H(m.size()), W(m.size() ? m[0].size() : 0) {
     elem.resize(H);
-    for (int i = 0; i < H; i++)
-      elem[i].resize(W);
-    for (int i = 0; i < H; i++)
-      elem[i] = m[i];
+    for (int i = 0; i < H; i++) elem[i].resize(W);
+    for (int i = 0; i < H; i++) elem[i] = m[i];
   }
   vector<T> &operator[](int h) { return elem[h]; }
   static Matrix identity(int N) {
@@ -76,8 +74,7 @@ template <class T> struct Matrix {
     Matrix a = identity(H);
     Matrix b = *this;
     while (x) {
-      if (x & 1)
-        a *= b;
+      if (x & 1) a *= b;
       b *= b;
       x >>= 1;
     }
@@ -87,17 +84,14 @@ template <class T> struct Matrix {
     for (int i = 0; i < x.H; i++) {
       for (int j = 0; j < x.W; j++) {
         os << x.elem[i][j];
-        if (j + 1 < x.W)
-          cout << ' ';
+        if (j + 1 < x.W) cout << ' ';
       }
-      if (i + 1 < x.H)
-        cout << endl;
+      if (i + 1 < x.H) cout << endl;
     }
     return os;
   }
   friend istream &operator>>(istream &is, Matrix &x) {
-    for (auto &v : x.elem)
-      is >> v;
+    for (auto &v : x.elem) is >> v;
     return is;
   }
 };

@@ -1,14 +1,10 @@
 #include <bits/stdc++.h>
+
 using namespace std;
-typedef long long ll;
-#define pu push
+
 #define pb push_back
-#define mp make_pair
 #define eps 1e-10
-#define INF 2000000000
 #define sq(x) ((x) * (x))
-#define fi first
-#define sec second
 #define all(x) (x).begin(), (x).end()
 
 // Geometry Library
