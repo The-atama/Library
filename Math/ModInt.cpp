@@ -74,7 +74,7 @@ using mint = ModInt<MOD>;
 
 vector<mint> inv, fac, facinv;
 // notice: 0C0 = 1
-ModInt<MOD> nCr(int n, int r) {
+mint nCr(int n, int r) {
   assert(!(n < r));
   assert(!(n < 0 || r < 0));
   return fac[n] * facinv[r] * facinv[n - r];

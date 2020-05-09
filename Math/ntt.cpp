@@ -18,33 +18,35 @@ typedef vector<ll> vll;
 #define repn(i, a, n) for (int(i) = (a); (i) < (int)(n); (i)++)
 #define EQ(a, b) (abs((a) - (b)) < eps)
 #define dmp(x) cerr << __LINE__ << " " << #x << " " << x << endl;
-template <class T> void chmin(T &a, const T &b) {
-  if (a > b)
-    a = b;
+template <class T>
+void chmin(T &a, const T &b) {
+  if (a > b) a = b;
 }
-template <class T> void chmax(T &a, const T &b) {
-  if (a < b)
-    a = b;
+template <class T>
+void chmax(T &a, const T &b) {
+  if (a < b) a = b;
 }
-template <class T, class U> ostream &operator<<(ostream &os, pair<T, U> &p) {
+template <class T, class U>
+ostream &operator<<(ostream &os, pair<T, U> &p) {
   os << p.fi << ',' << p.sec;
   return os;
 }
-template <class T, class U> istream &operator>>(istream &is, pair<T, U> &p) {
+template <class T, class U>
+istream &operator>>(istream &is, pair<T, U> &p) {
   is >> p.fi >> p.sec;
   return is;
 }
-template <class T> ostream &operator<<(ostream &os, const vector<T> &vec) {
+template <class T>
+ostream &operator<<(ostream &os, const vector<T> &vec) {
   for (int i = 0; i < vec.size(); i++) {
     os << vec[i];
-    if (i + 1 < vec.size())
-      os << ' ';
+    if (i + 1 < vec.size()) os << ' ';
   }
   return os;
 }
-template <class T> istream &operator>>(istream &is, vector<T> &vec) {
-  for (int i = 0; i < vec.size(); i++)
-    is >> vec[i];
+template <class T>
+istream &operator>>(istream &is, vector<T> &vec) {
+  for (int i = 0; i < vec.size(); i++) is >> vec[i];
   return is;
 }
 void fastio() {
@@ -60,8 +62,7 @@ struct Garner {
   ll power_mod(ll x, ll a, ll mod) {
     ll res = 1ll;
     while (a > 0ll) {
-      if (a & 1)
-        res = (res * x) % mod;
+      if (a & 1) res = (res * x) % mod;
       x = (x * x) % mod;
       a >>= 1;
     }
@@ -95,22 +96,20 @@ struct Garner {
   }
 };
 
-template <ll MOD, ll primitive> class NTT {
-public:
-  ll power_mod(ll x, ll a, ll mod) {
+template <ll MOD, ll primitive>
+struct NTT {
+  static ll power_mod(ll x, ll a, ll mod) {
     ll res = 1ll;
     while (a > 0ll) {
-      if (a & 1)
-        res = (res * x) % mod;
+      if (a & 1) res = (res * x) % mod;
       x = (x * x) % mod;
       a >>= 1;
     }
     return res;
   }
-  ll get_MOD() const { return MOD; }
-  vector<ll> dft(vector<ll> f, int n, int sgn = 1) {
-    if (n == 1)
-      return f;
+  static ll get_MOD() { return MOD; }
+  static vector<ll> dft(vector<ll> f, int n, int sgn = 1) {
+    if (n == 1) return f;
     vector<ll> f0, f1;
     for (int i = 0; i < n / 2; i++) {
       f0.pb(f[i * 2]);
@@ -119,8 +118,7 @@ public:
     f0 = dft(f0, n / 2, sgn);
     f1 = dft(f1, n / 2, sgn);
     ll zeta = power_mod(primitive, (MOD - 1ll) / (ll)n, MOD);
-    if (sgn == -1)
-      zeta = power_mod(zeta, MOD - 2, MOD);
+    if (sgn == -1) zeta = power_mod(zeta, MOD - 2, MOD);
     ll pow_zeta = 1ll;
     for (int i = 0; i < n; i++) {
       f[i] = (f0[i % (n / 2)] + pow_zeta * f1[i % (n / 2)]) % MOD;
@@ -128,25 +126,21 @@ public:
     }
     return f;
   }
-  vector<ll> idft(vector<ll> f, int n) {
+  static vector<ll> idft(vector<ll> f, int n) {
     f = dft(f, n, -1);
     ll ninv = power_mod(n, MOD - 2, MOD);
-    for (int i = 0; i < f.size(); i++) {
-      f[i] = (f[i] * ninv) % MOD;
-    }
+    for (int i = 0; i < f.size(); i++) { f[i] = (f[i] * ninv) % MOD; }
     return f;
   }
-  vector<ll> mult(vector<ll> A, vector<ll> B) {
+  static vector<ll> mult(vector<ll> A, vector<ll> B) {
     int n = 1;
-    while (n < A.size() + B.size() + 1)
-      n <<= 1;
+    while (n < A.size() + B.size() + 1) n <<= 1;
     A.resize(n, 0);
     B.resize(n, 0);
     A = dft(A, n);
     B = dft(B, n);
     vector<ll> C;
-    for (int i = 0; i < n; i++)
-      C.pb((A[i] * B[i]) % MOD);
+    for (int i = 0; i < n; i++) C.pb((A[i] * B[i]) % MOD);
     return idft(C, n);
   }
 };
@@ -157,26 +151,19 @@ using NTT3 = NTT<1224736769ll, 3ll>;
 
 // for arbitary mod
 vector<ll> ConvolutionWithGarner(vector<ll> a, vector<ll> b, ll mod) {
-  for (ll &x : a)
-    x = ((x % mod) + mod) % mod;
-  for (ll &x : b)
-    x = ((x % mod) + mod) % mod;
-  NTT1 ntt1;
-  NTT2 ntt2;
-  NTT3 ntt3;
-  vector<ll> c1 = ntt1.mult(a, b);
-  vector<ll> c2 = ntt2.mult(a, b);
-  vector<ll> c3 = ntt3.mult(a, b);
-  vector<ll> p = {ntt1.get_MOD(), ntt2.get_MOD(), ntt3.get_MOD()};
+  for (ll &x : a) x = ((x % mod) + mod) % mod;
+  for (ll &x : b) x = ((x % mod) + mod) % mod;
+  vector<ll> c1 = NTT1::mult(a, b);
+  vector<ll> c2 = NTT2::mult(a, b);
+  vector<ll> c3 = NTT3::mult(a, b);
+  vector<ll> p = {NTT1::get_MOD(), NTT2::get_MOD(), NTT3::get_MOD()};
   vector<Garner> gn;
   for (int i = 0; i < c1.size(); i++) {
     vector<ll> rem = {c1[i], c2[i], c3[i]};
     gn.push_back(Garner(p, rem));
   }
   vector<ll> c;
-  for (int i = 0; i < c1.size(); i++) {
-    c.push_back(gn[i].get(mod));
-  }
+  for (int i = 0; i < c1.size(); i++) { c.push_back(gn[i].get(mod)); }
   return c;
 }
 
@@ -188,8 +175,7 @@ int main() {
   cin >> A;
   cin >> B;
   // vector<ll> C = ConvolutionWithGarner(A,B,1000000007);
-  NTT2 ntt1;
-  vector<ll> C = ntt1.mult(A, B);
+  vector<ll> C = NTT2::mult(A, B);
   for (int i = 0; i < N + M - 1; i++) {
     cout << C[i];
     if (i + 1 < N + M - 1)
