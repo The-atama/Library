@@ -15,10 +15,12 @@ struct AhoCorasick {
     int par;         // parent
     char par_c;      // character on the edge from parent to this node
     int suf_link;    // suffix link
+    int exit_link;   // exit link : direct suffix link to the nearest match
     vector<int> go;  // transition of the automaton
     int match_count; // the number of matches of this state
     Node(int par = -1, char par_c = '$')
-        : leaf(false), par(par), par_c(par_c), suf_link(-1) {
+        : leaf(false), par(par), par_c(par_c), suf_link(-1), exit_link(-1),
+          match_count(-1) {
       child.assign(alphabet_size, -1);
       go.assign(alphabet_size, -1);
     }
@@ -26,7 +28,7 @@ struct AhoCorasick {
 
   vector<Node> T;
 
-  void add_string(const string &s) {
+  int add_string(const string &s) {
     int v = root;
     for (char ch : s) {
       int c = ch - base;
@@ -37,6 +39,7 @@ struct AhoCorasick {
       v = T[v].child[c];
     }
     T[v].leaf = true;
+    return v;
   }
 
   int suf_link(int v) {
@@ -63,18 +66,33 @@ struct AhoCorasick {
   }
 
   int match_count(int v) {
-    if (v == root)
-      T[v].match_count = 0;
-    else {
-      T[v].match_count = match_count(suf_link(v)) + (T[v].leaf ? 1 : 0);
+    if (T[v].match_count == -1) {
+      if (v == root)
+        T[v].match_count = 0;
+      else {
+        T[v].match_count = match_count(suf_link(v)) + (T[v].leaf ? 1 : 0);
+      }
     }
     return T[v].match_count;
+  }
+
+  int exit_link(int v) {
+    if (T[v].exit_link == -1) {
+      if (v == root)
+        T[v].exit_link = 0;
+      else {
+        int suf = suf_link(v);
+        T[v].exit_link = T[suf].leaf ? suf : exit_link(suf);
+      }
+    }
+    return T[v].exit_link;
   }
 
   void build() {
     for (int v = 0; v < T.size(); v++) {
       suf_link(v);
       match_count(v);
+      exit_link(v);
       for (int i = 0; i < alphabet_size; i++) go(v, base + i);
     }
   }
