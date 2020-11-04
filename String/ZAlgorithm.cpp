@@ -2,6 +2,7 @@
 
 using namespace std;
 
+// Z[i] : the longest common prefix of S and S[i:]
 struct Zalgorithm {
   string s;
   vector<int> Z;
