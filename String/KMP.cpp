@@ -1,7 +1,4 @@
-#include <cassert>
-#include <cstdio>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -23,6 +20,22 @@ struct KMP {
     assert(id >= 0 && id < kmp.size());
     return kmp[id];
   }
+
+  vector<int> match(const string &t) {
+    vector<int> ids;
+    int j = 0;
+    for (int i = 0; i < t.size(); i++) {
+      while (j >= 0 && s[j] != t[i]) j = kmp[j];
+      j++;
+      // s[0,j)と一致
+      if (j >= s.size()) {
+        ids.push_back(i - j + 1);
+        j = kmp[j];
+      }
+    }
+    return ids;
+  }
+
   int get_cycle() { return s.size() - kmp[s.size()]; }
 };
 
@@ -63,9 +76,14 @@ void solve() {
   printf("%d\n", ar * ac);
   return;
 }
-}  // namespace PKU2185
+} // namespace PKU2185
 
 int main() {
-  PKU2185::solve();
+  // PKU2185::solve();
+  string s, t;
+  cin >> s >> t;
+  KMP<string> kmp(s);
+  auto match = kmp.match(t);
+  for (int i = 0; i < match.size(); i++) cout << match[i] << endl;
   return 0;
 }
