@@ -19,6 +19,8 @@ inline double add(double a, double b) {
   return a + b;
 }
 
+// --------------------- Point -----------------------
+
 #define Vector Point
 struct Point {
   double x, y;
@@ -34,40 +36,45 @@ struct Point {
   double norm2() { return x * x + y * y; }
   double dist(Point p) { return ((*this) - p).norm(); }
   double dist2(Point p) { return sq(x - p.x) + sq(y - p.y); }
-  double arg() { return atan2(y, x); }              // [-PI,PI]
-  double arg(Vector v) { return v.arg() - arg(); }  // henkaku
-  double angle(Vector v) {                          // [0,PI]
+  double arg() { return atan2(y, x); }             // [-PI,PI]
+  double arg(Vector v) { return v.arg() - arg(); } // henkaku
+  double angle(Vector v) {                         // [0,PI]
     return acos(cos(arg(v)));
   }
   Vector normalize() { return (*this) * (1.0 / norm()); }
   Point vert() { return Point(y, -x); }
 
-  // signed area of triange (0,0) (x,y) (p.x,p.y)
+  // Signed area of triange (0,0) (x,y) (p.x,p.y)
   double area(Point p) { return (x * p.y - p.x * y) / 2.0; }
   friend istream &operator>>(istream &is, Point &p) { return is >> p.x >> p.y; }
   friend ostream &operator<<(ostream &os, const Point &p) {
     return os << '(' << p.x << ',' << p.y << ')';
   }
 };
-// direction a -> b -> c
-// verified AOJ CGL_1_C
-enum { COUNTER_CLOCKWISE, CLOCKWISE, ONLINE_BACK, ONLINE_FRONT, ON_SEGMENT };
+
 Point divide_rate(Point a, Point b, double A, double B) {
   assert(!EQ(A + B, 0.0));
   return (a * B + b * A) * (1.0 / (A + B));
 }
+
 Vector polar(double len, double arg) {
   return Vector(cos(arg) * len, sin(arg) * len);
 }
+
+// Direction a -> b -> c
+// verified AOJ CGL_1_C
+enum { COUNTER_CLOCKWISE, CLOCKWISE, ONLINE_BACK, ONLINE_FRONT, ON_SEGMENT };
 int ccw(Point a, Point b, Point c) {
   Vector p = b - a;
   Vector q = c - a;
-  if (p.det(q) > 0.0) return COUNTER_CLOCKWISE;  // counter clockwise
-  if (p.det(q) < 0.0) return CLOCKWISE;          // clockwise
-  if (p.dot(q) < 0.0) return ONLINE_BACK;        // c--a--b online_back
-  if (p.norm() < q.norm()) return ONLINE_FRONT;  // a--b--c online_front
-  return ON_SEGMENT;                             // a--c--b on_segment
+  if (p.det(q) > 0.0) return COUNTER_CLOCKWISE; // counter clockwise
+  if (p.det(q) < 0.0) return CLOCKWISE;         // clockwise
+  if (p.dot(q) < 0.0) return ONLINE_BACK;       // c--a--b online_back
+  if (p.norm() < q.norm()) return ONLINE_FRONT; // a--b--c online_front
+  return ON_SEGMENT;                            // a--c--b on_segment
 }
+
+// --------------------- Line ------------------------
 struct Line {
   Point a, b;
   Line() {}
@@ -80,7 +87,7 @@ struct Line {
     assert(!is_parallel(l));
     return a + (b - a) * ((l.b - l.a).det(l.a - a) / (l.b - l.a).det(b - a));
   }
-  // projection of p to this line
+  // Projection of p to this line
   // verified AOJ CGL_1_A
   Point projection(Point p) {
     return (b - a) * ((b - a).dot(p - a) / (b - a).norm2()) + a;
@@ -89,7 +96,7 @@ struct Line {
     Point q = projection(p);
     return p.dist(q);
   }
-  // reflection point of p onto this line
+  // Reflection point of p onto this line
   // verified AOJ CGL_1_B
   Point refl(Point p) {
     Point proj = projection(p);
@@ -106,6 +113,8 @@ struct Line {
     return os << l.a << " -> " << l.b;
   }
 };
+
+// ------------------- Segment  ----------------------
 struct Segment {
   Point a, b;
   Segment() {}
@@ -140,7 +149,7 @@ struct Segment {
     else
       return false;
   }
-  // following 2 distance functions verified AOJ CGL_2_D
+  // following 2 distance functions are verified at AOJ CGL_2_D
   double distance(Point p) {
     double res = DOUBLE_INF;
     Point q = line().projection(p);
@@ -165,11 +174,11 @@ struct Segment {
   }
 };
 
-// Polygon
+// ------------------- Polygon -----------------------
+// Note: A polygon generally don't need to be convex.
 
 typedef vector<Point> Polygon;
 // verified AOJ CGL_3_A
-// Polygon don't need to be convex
 double area(Polygon &pol) {
   Points vec;
   double res = 0.0;
@@ -179,6 +188,7 @@ double area(Polygon &pol) {
   }
   return res;
 }
+
 bool is_convex(Polygon &pol) {
   int n = pol.size();
   for (int i = 0; i < n - 1; i++) {
@@ -188,6 +198,7 @@ bool is_convex(Polygon &pol) {
   }
   return true;
 }
+
 // vecrified AOJ CGL_3_C
 enum { OUT, ON, IN };
 int contained(Polygon &pol, Point p) {
@@ -210,7 +221,8 @@ int contained(Polygon &pol, Point p) {
   else
     return OUT;
 }
-// compare function for convex_hull
+
+// A compare function for convex_hull
 // sort points by (x-y) lexicographical order.
 // you can change (y-x) order with no change in convex_hull
 bool comp(const Point &p, const Point &q) {
@@ -219,6 +231,7 @@ bool comp(const Point &p, const Point &q) {
   else
     return p.y < q.y;
 }
+
 // Convex hull
 // if you want not to contain points on boundary,
 // change while(....<=0.0)
@@ -239,6 +252,7 @@ Polygon convex_hull(vector<Point> ps) {
   qs.resize(k - 1);
   return qs;
 }
+
 // Caliper method
 // verified AOJ CGL_4_B
 double convex_diameter(Polygon &cv) {
@@ -259,6 +273,7 @@ double convex_diameter(Polygon &cv) {
   }
   return res;
 }
+
 // Cut conovex polygon by a line and return left polygon
 // verified AOJ CGL_4_C
 Polygon convex_cut(Polygon &cv, Line l) {
@@ -273,7 +288,8 @@ Polygon convex_cut(Polygon &cv, Line l) {
   }
   return left;
 }
-// distance between closest pair
+
+// Distance between closest pair
 // verified CGL_5_A
 bool comp_y(const Point &p, const Point &q) {
   return p.y < q.y;
@@ -304,16 +320,17 @@ double closest_pair(vector<Point> a) {
   return closest_pair(a.begin(), (int)a.size());
 }
 
-// Circle
+// -------------------- Circle -----------------------
 
-// relation between two circles
-// each value as integer corresponds to
-// the number of common tangent lines
+// Relationship between two circles
+// Each value as integer corresponds to the number of common tangent lines.
+// (e.g. When two circles are circumscribed with each other, there are 3 common
+// tangent lines.)
 enum {
   INCLUDE,
-  INSCRIBED,  // in japanese "naisetsu"
+  INSCRIBED, // in japanese "naisetsu"
   INTERSECT,
-  CIRCUMSCRIBED,  // in japanese "gaisetsu"
+  CIRCUMSCRIBED, // in japanese "gaisetsu"
   NOT_CROSS,
 };
 
@@ -380,7 +397,7 @@ struct Circle {
   Points common_tangent(Circle c) {
     Points res;
     int state = is_intersect(c);
-    if (EQ(r, c.r)) {  // radius of the two circles are same
+    if (EQ(r, c.r)) { // radius of the two circles are same
       Point p = divide_rate(center, c.center, r, c.r);
       Vector v = (c.center - center).vert().normalize() * r;
       if (state == INCLUDE)
@@ -397,7 +414,7 @@ struct Circle {
         res.pb(center - v);
         res.pb(p);
         return res;
-      } else {  // NOT_CROSS
+      } else { // NOT_CROSS
         Points res = tangent(p);
         res.pb(center + v);
         res.pb(center - v);
@@ -417,7 +434,7 @@ struct Circle {
         res = tangent(q);
         res.pb(p);
         return res;
-      } else {  // NOT_CROSS
+      } else { // NOT_CROSS
         Points res = tangent(p);
         Points add = tangent(q);
         for (int i = 0; i < add.size(); i++) res.pb(add[i]);
@@ -425,7 +442,7 @@ struct Circle {
       }
     }
   }
-  // area of intersection between this circle
+  // Area of intersection between this circle
   // and left side of given line l.
   // "left" is defined by considering line as directed vector(l.a -> l.b)
   // note: this function has not been verified yet.
@@ -446,7 +463,7 @@ struct Circle {
     else
       return fan - tri;
   }
-  // returen signed area of intersection
+  // Returen signed area of intersection
   // between triangle(center-a-b) and this circle
   // verified AOJ CGL_7_H
   double area_intersection_triangle(Point a, Point b) {
@@ -480,7 +497,7 @@ struct Circle {
     if ((a - center).det(b - center) < 0.0) res = -res;
     return res;
   }
-  // area of intersection between given polygon and
+  // Area of intersection between given polygon and
   // this circle. polygon don't need to be convex
   double area_intersection_polygon(Polygon pol) {
     int n = pol.size();
@@ -499,7 +516,8 @@ struct Circle {
   }
 };
 
-int main() {
+// Calculate area of intersection of a polygon and a circle.
+void unittest() {
   int n;
   double r;
   cin >> n >> r;
@@ -507,5 +525,10 @@ int main() {
   Polygon pol(n);
   for (int i = 0; i < n; i++) { cin >> pol[i]; }
   printf("%.12f\n", c.area_intersection_polygon(pol));
+  return;
+}
+
+int main() {
+  unittest();
   return 0;
 }
