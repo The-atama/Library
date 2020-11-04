@@ -1,3 +1,6 @@
+// Verified
+// https://codeforces.com/contest/1437/submission/96955569
+
 struct AhoCorasick {
   const static int alphabet_size = 26;
   const int root = 0;
