@@ -2,9 +2,11 @@
 
 using namespace std;
 
-template <class T> using MinHeap = priority_queue<T, vector<T>, greater<T>>;
+template <class T>
+using MinHeap = priority_queue<T, vector<T>, greater<T>>;
 
-template <class Cost> struct edge {
+template <class Cost = int>
+struct edge {
   int from, to;
   Cost cost;
   edge() {}
@@ -17,7 +19,8 @@ template <class Cost> struct edge {
   }
 };
 
-template <class Cost> struct Graph {
+template <class Cost = int>
+struct Graph {
   int V;
   vector<vector<edge<Cost>>> G;
   Graph() {}
@@ -32,44 +35,63 @@ template <class Cost> struct Graph {
   size_t size() const { return G.size(); }
   const vector<edge<Cost>> &operator[](int id) const { return G[id]; }
 
-  // verified
-  // https://atcoder.jp/contests/dwacon6th-final-open/submissions/10023433
-  vector<Cost> dijkstra(int s) {
-    assert(0 <= s && s < G.size());
-    vector<Cost> dist;
-    dist.assign(G.size(), numeric_limits<Cost>::max());
-    dist[s] = Cost(0);
-    MinHeap<pair<Cost, int>> q;
-    q.push(make_pair(Cost(0), s));
-    while (!q.empty()) {
-      auto a = q.top();
-      q.pop();
-      int v = a.second;
-      if (dist[v] < a.first)
-        continue;
-      for (auto e : G[v]) {
-        if (dist[e.to] > dist[v] + e.cost) {
-          dist[e.to] = dist[v] + e.cost;
-          q.push(make_pair(dist[e.to], e.to));
-        }
-      }
-    }
-    return dist;
-  }
-
   // for debug
   friend ostream &operator<<(ostream &os, const Graph g) {
     for (int i = 0; i < g.size(); i++) {
       os << g[i];
-      if (i + 1 < g.size())
-        os << endl;
+      if (i + 1 < g.size()) os << endl;
     }
     return os;
   }
 };
 
+// verified
+// https://atcoder.jp/contests/dwacon6th-final-open/submissions/10023433
+template <class Cost>
+vector<Cost> dijkstra(Graph<Cost> &g, int s) {
+  assert(0 <= s && s < g.size());
+  vector<Cost> dist;
+  dist.assign(g.size(), numeric_limits<Cost>::max());
+  dist[s] = Cost(0);
+  MinHeap<pair<Cost, int>> q;
+  q.push(make_pair(Cost(0), s));
+  while (!q.empty()) {
+    auto a = q.top();
+    q.pop();
+    int v = a.second;
+    if (dist[v] < a.first) continue;
+    for (auto e : g[v]) {
+      if (dist[e.to] > dist[v] + e.cost) {
+        dist[e.to] = dist[v] + e.cost;
+        q.push(make_pair(dist[e.to], e.to));
+      }
+    }
+  }
+  return dist;
+}
+
+// Verify:
+// https://codeforces.com/contest/1430/submission/98250456
+template <class T>
+vector<int> topological_order(Graph<T> &g) {
+  vector<bool> used(g.size(), false);
+  vector<int> topo;
+  auto dfs = [&](auto &&f, int v) -> void {
+    used[v] = true;
+    for (auto &e : g[v])
+      if (!used[e.to]) f(f, e.to);
+    topo.push_back(v);
+  };
+  for (int i = 0; i < g.size(); i++) {
+    if (!used[i]) dfs(dfs, i);
+  }
+  reverse(topo.begin(), topo.end());
+  return topo;
+}
+
 // verified https://judge.yosupo.jp/submission/3440
-template <class Graph> struct SCC {
+template <class Graph>
+struct SCC {
   Graph G, rG; // Graph and reverse Graph
   vector<bool> used;
   vector<int> vs;
@@ -80,13 +102,10 @@ template <class Graph> struct SCC {
     used.resize(G.size(), false);
     cmp_id.resize(G.size(), -1);
     for (int i = 0; i < G.size(); i++) {
-      for (auto e : G[i]) {
-        rG.add_edge(e.to, e.from, e.cost);
-      }
+      for (auto e : G[i]) { rG.add_edge(e.to, e.from, e.cost); }
     }
     for (int i = 0; i < G.size(); i++) {
-      if (!used[i])
-        dfs(i);
+      if (!used[i]) dfs(i);
     }
     used.assign(G.size(), false);
     reverse(vs.begin(), vs.end());
@@ -101,8 +120,7 @@ template <class Graph> struct SCC {
   void dfs(int s) {
     used[s] = true;
     for (const auto &e : G[s]) {
-      if (!used[e.to])
-        dfs(e.to);
+      if (!used[e.to]) dfs(e.to);
     }
     vs.push_back(s);
   }
@@ -111,8 +129,7 @@ template <class Graph> struct SCC {
     cmp_id[s] = k;
     cmp[k].push_back(s);
     for (const auto &e : rG[s]) {
-      if (!used[e.to])
-        rdfs(e.to, k);
+      if (!used[e.to]) rdfs(e.to, k);
     }
   }
 };

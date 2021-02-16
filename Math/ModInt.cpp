@@ -5,7 +5,7 @@ using namespace std;
 typedef long long ll;
 
 namespace Math {
-template <int MOD>  // if inv is needed, this shold be prime.
+template <int MOD> // if inv is needed, this shold be prime.
 struct ModInt {
   ll val;
   ModInt() : val(0ll) {}
@@ -93,6 +93,17 @@ void init(int SIZE) {
 }
 
 template <class T>
+T nCr_naive(T n, int r) {
+  T ret(1);
+  for (int i = 0; i < r; i++) {
+    ret *= n;
+    ret /= T(i + 1);
+    n -= T(1);
+  }
+  return ret;
+}
+
+template <class T>
 int digit(T x) {
   int res = 0;
   while (x) {
@@ -125,7 +136,7 @@ T mylcm(T x, T y) {
   assert(x / mygcd(x, y) <= numeric_limits<T>::max() / y);
   return x / mygcd(x, y) * y;
 }
-}  // namespace Math
+} // namespace Math
 int main() {
   Math::init(100100);
   return 0;

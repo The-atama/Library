@@ -2,14 +2,18 @@
 
 using namespace std;
 
-#define pb push_back
 #define eps 1e-10
 #define sq(x) ((x) * (x))
 #define all(x) (x).begin(), (x).end()
 
+// TODO:
+// middle point
+// Vertical bisector (suichoku nitoubunsen)
+
 // Geometry Library
 // written by okuraofvegetable
 
+#define pb push_back
 #define DOUBLE_INF 1e50
 #define Points vector<Point>
 #define EQ(a, b) (abs((a) - (b)) < eps)

@@ -10,8 +10,8 @@ typedef vector<ll> vll;
 #define pb push_back
 #define mp make_pair
 #define eps 1e-9
-#define INF 1000000000            // 1e9
-#define LLINF 1000000000000000ll  // 1e15
+#define INF 1000000000           // 1e9
+#define LLINF 1000000000000000ll // 1e15
 #define fi first
 #define sec second
 #define all(x) (x).begin(), (x).end()
@@ -53,7 +53,7 @@ struct Tree {
   vector<vector<int>> dpar;
   vector<int> par;
   vector<int> subtree_size;
-  vector<Cost> dist;  // distance from root node
+  vector<Cost> dist; // distance from root node
   vector<vector<edge<Cost>>> G;
   Tree() {}
   Tree(int V, int r = 0) : V(V), root(r) {
@@ -64,15 +64,14 @@ struct Tree {
     subtree_size.resize(V);
   }
   void add_edge(int u, int v, Cost c = Cost(0)) {
-    G[u].pb(edge<Cost>(u, v, c));
-    G[v].pb(edge<Cost>(v, u, c));
+    G[u].emplace_back(u, v, c);
+    G[v].emplace_back(v, u, c);
   }
   int dfs(int v, int p, int d, Cost c) {
     depth[v] = d;
     par[v] = p;
     subtree_size[v] = 1;
     dist[v] = c;
-    bool is_centroid = true;
     for (auto e : G[v]) {
       int u = e.to;
       if (u == p) continue;
