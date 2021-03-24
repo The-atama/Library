@@ -2,7 +2,8 @@
 
 using namespace std;
 
-template <class D, class O> struct LazySegmentTree {
+template <class D, class O>
+struct LazySegmentTree {
   using DMerger = function<D(D, D)>;
   using OMerger = function<O(O, O)>;
   using Applier = function<D(D, O, int)>;
@@ -19,8 +20,7 @@ template <class D, class O> struct LazySegmentTree {
   Applier app;
 
   void lazy_evaluate(int k, int len) {
-    if (lazy[k] == o_unit)
-      return;
+    if (lazy[k] == o_unit) return;
     if (len > 1) {
       lazy[2 * k + 1] = om(lazy[2 * k + 1], lazy[k]);
       lazy[2 * k + 2] = om(lazy[2 * k + 2], lazy[k]);
@@ -58,22 +58,17 @@ template <class D, class O> struct LazySegmentTree {
   LazySegmentTree(int n, D d_unit, O o_unit, DMerger dm, OMerger om,
                   Applier app)
       : length(1), d_unit(d_unit), o_unit(o_unit), dm(dm), om(om), app(app) {
-    while (length < n) {
-      length <<= 1;
-    }
+    while (length < n) { length <<= 1; }
     seg.assign(length * 2, d_unit);
     lazy.assign(length * 2, o_unit);
   }
   LazySegmentTree(vector<D> vec, D d_unit, O o_unit, DMerger dm, OMerger om,
                   Applier app)
       : length(1), d_unit(d_unit), o_unit(o_unit), dm(dm), om(om), app(app) {
-    while (length < vec.size()) {
-      length <<= 1;
-    }
+    while (length < vec.size()) { length <<= 1; }
     seg.assign(length * 2, d_unit);
     lazy.assign(length * 2, o_unit);
-    for (int i = 0; i < vec.size(); i++)
-      seg[length - 1 + i] = vec[i];
+    for (int i = 0; i < vec.size(); i++) seg[length - 1 + i] = vec[i];
     for (int i = length - 2; i >= 0; i--)
       seg[i] = dm(seg[i * 2 + 1], seg[i * 2 + 2]);
   }
@@ -81,14 +76,16 @@ template <class D, class O> struct LazySegmentTree {
 
 // RangeAddRangeSum update : a[l,r) += c
 // verified https://atcoder.jp/contests/abc153/submissions/9866001
-template <class T> LazySegmentTree<T, T> RangeAddRangeSum(int size) {
+template <class T>
+LazySegmentTree<T, T> RangeAddRangeSum(int size) {
   auto dm = [](T a, T b) { return a + b; };
   auto om = [](T a, T b) { return a + b; };
   auto app = [](T dat, T lz, int len) { return dat + lz * T(len); };
   return LazySegmentTree<T, T>(size, T(0), T(0), dm, om, app);
 }
 
-template <class T> LazySegmentTree<T, T> RangeAddRangeSum(vector<T> vec) {
+template <class T>
+LazySegmentTree<T, T> RangeAddRangeSum(vector<T> vec) {
   auto dm = [](T a, T b) { return a + b; };
   auto om = [](T a, T b) { return a + b; };
   auto app = [](T dat, T lz, int len) { return dat + lz * T(len); };
