@@ -12,3 +12,19 @@ vector<pair<ll, int>> factorize(ll x) {
   if (tmp != 1ll) ret.push_back(pair<ll, int>(tmp, 1));
   return ret;
 }
+
+vector<ll> divisor(const vector<pair<ll, int>> &fs) {
+  vector<ll> ds;
+  function<void(int, ll)> rec = [&](int n, ll val) {
+    if (n == fs.size()) {
+      ds.push_back(val);
+      return;
+    }
+    for (int i = 0; i <= fs[n].second; i++) {
+      rec(n + 1, val);
+      val *= fs[n].first;
+    }
+  };
+  rec(0, 1ll);
+  return ds;
+}
