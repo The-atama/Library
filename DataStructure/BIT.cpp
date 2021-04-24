@@ -2,7 +2,8 @@
 
 using namespace std;
 
-template <class T> struct BIT {
+template <class T>
+struct BIT {
   int N;
   vector<T> bit;
   BIT(int N) : N(N) { bit = vector<T>(N + 1, T(0)); }
