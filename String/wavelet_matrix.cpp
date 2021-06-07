@@ -6,10 +6,10 @@ struct FullyIndexableDictionary {
   static const int bigBlockSize = 1024;
   static constexpr int smallInBig = bigBlockSize / smallBlockSize;
 
-  vector<uint16_t> bit;  // raw data
+  vector<uint16_t> bit; // raw data
 
-  vector<uint32_t> bigBlockAcc;            // not succinct, optimal : 22 bit
-  vector<vector<uint16_t>> smallBlockAcc;  // not succinct, optimal : 10 bit
+  vector<uint32_t> bigBlockAcc;           // not succinct, optimal : 22 bit
+  vector<vector<uint16_t>> smallBlockAcc; // not succinct, optimal : 10 bit
 
   int length;
   int bigBlockNum;
@@ -160,7 +160,7 @@ struct WaveletMatrix {
   // position of num-th v
   // id is 0-indexed
   int select(T v, int num) {
-    rank(v, length);  // store path in buf
+    rank(v, length); // store path in buf
     for (int i = LOG - 1; i >= 0; i--) {
       int bit = (v >> (LOG - i - 1)) & (T(1));
       num = mat[i].select(bit, num, buf1[i]);
@@ -332,7 +332,7 @@ struct BurrowsWheelerTransform {
     bwt.resize(sa.size() + 1);
     for (int i = 0; i < bwt.size(); i++) {
       if (sa[i] == 0)
-        bwt[i] = (char)7;  // dummy
+        bwt[i] = (char)7; // dummy
       else
         bwt[i] = sa.s[sa[i] - 1];
     }
@@ -344,7 +344,7 @@ struct BurrowsWheelerTransform {
 pair<int, int> searchFMIndex(SuffixArray &sa,
                              WaveletMatrix<unsigned char, 8> &wm,
                              vector<int> &lessCount, string t) {
-  int l = 0, r = sa.size() + 1;  // because of dummy character
+  int l = 0, r = sa.size() + 1; // because of dummy character
   for (int i = 0; i < t.size(); i++) {
     unsigned char c = t[t.size() - 1 - i];
     // cout << wm.rank(c,l) << ' ' << wm.rank(c,r) << endl;
@@ -363,7 +363,7 @@ pair<int, int> contain(string s, string t) {
   for (int i = 0; i < bwt.size(); i++) { bw.push_back((unsigned char)bwt[i]); }
   WaveletMatrix<unsigned char, 8> wm(bw);
 
-  s += ((char)7);  // dummy
+  s += ((char)7); // dummy
   vector<int> lessCount(256);
   for (int i = 0; i < s.size(); i++) { lessCount[s[i] + 1]++; }
   for (int i = 1; i < lessCount.size(); i++) {

@@ -19,4 +19,6 @@ void dfs(int v, int p) {
   }
   end[v] = k;
 }
-int main() { dfs(root, -1); }
+int main() {
+  dfs(root, -1);
+}
