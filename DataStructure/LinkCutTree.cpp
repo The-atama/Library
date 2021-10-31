@@ -54,8 +54,7 @@ struct Node {
     data.lazy = -1;
   }
   void update() { //子から、size,dataを更新する
-    if (this == NULL)
-      return;
+    if (this == NULL) return;
     size = 1;
     data.sum = data.val;
     if (lp != NULL) {
@@ -83,21 +82,13 @@ struct Node {
     // もちろんrevよりも先に遅延評価しないと意味がない
     bool lch = (lp != NULL), rch = (rp != NULL);
     if (data.lazy != -1) {
-      if (lch) {
-        lp->lazy_evaluate(data.lazy);
-      }
-      if (rch) {
-        rp->lazy_evaluate(data.lazy);
-      }
+      if (lch) { lp->lazy_evaluate(data.lazy); }
+      if (rch) { rp->lazy_evaluate(data.lazy); }
       data.lazy = -1;
     }
     if (rev) {
-      if (lch) {
-        lp->toggle();
-      }
-      if (rch) {
-        rp->toggle();
-      }
+      if (lch) { lp->toggle(); }
+      if (rch) { rp->toggle(); }
       rev = false;
     }
   }
@@ -115,35 +106,33 @@ struct Node {
   }
   void rotr() { // splay木　右回転
     Node *q = pp, *r = q->pp;
-    if ((q->lp = rp))
-      rp->pp = q;
+    if ((q->lp = rp)) rp->pp = q;
     rp = q;
-    q->pp = this;
-    q->update();
+    if (q) {
+      q->pp = this;
+      q->update();
+    }
     update();
     if ((pp = r)) {
-      if (r->lp == q)
-        r->lp = this;
-      if (r->rp == q)
-        r->rp = this;
+      if (r->lp == q) r->lp = this;
+      if (r->rp == q) r->rp = this;
     }
-    r->update();
+    if (r) { r->update(); }
   }
   void rotl() { // splay木 左回転
     Node *q = pp, *r = q->pp;
-    if ((q->rp = lp))
-      lp->pp = q;
+    if ((q->rp = lp)) lp->pp = q;
     lp = q;
-    q->pp = this;
-    q->update();
+    if (q) {
+      q->pp = this;
+      q->update();
+    }
     update();
     if ((pp = r)) {
-      if (r->lp == q)
-        r->lp = this;
-      if (r->rp == q)
-        r->rp = this;
+      if (r->lp == q) r->lp = this;
+      if (r->rp == q) r->rp = this;
     }
-    r->update();
+    if (r) { r->update(); }
   }
   /*void splay(){ // splay操作。 頂点を属するsplay木の根に持っていく
           push_all();
@@ -238,8 +227,7 @@ struct Node {
   Node *root() { // 実際の木において、このnodeが所属する木の根
     expose();
     Node *u = this;
-    while (u->lp)
-      u = u->lp;
+    while (u->lp) u = u->lp;
     u->splay();
     return u;
   }
@@ -249,8 +237,7 @@ struct Node {
     Node *ret = p;
     while (p->pp != NULL) {
       // exposeで自分の子孫とは別のsplay木に属することになるからこれでOK
-      if (p->is_root())
-        ret = p->pp;
+      if (p->is_root()) ret = p->pp;
       p = p->pp;
     }
     return (this == p) ? ret : NULL;
@@ -277,10 +264,8 @@ void showtree(int n){
 int N, Q;
 int main() {
   scanf("%d %d", &N, &Q);
-  for (int i = 0; i < N; i++)
-    nodev[i] = new Node(i, 0);
-  for (int i = 0; i < N; i++)
-    nodee[i] = new Node(i, 1);
+  for (int i = 0; i < N; i++) nodev[i] = new Node(i, 0);
+  for (int i = 0; i < N; i++) nodee[i] = new Node(i, 1);
   int cnt = 0;
   for (int i = 0; i < Q; i++) {
     int T, A, B;
