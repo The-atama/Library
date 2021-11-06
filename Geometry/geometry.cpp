@@ -16,7 +16,12 @@ using namespace std;
 #define pb push_back
 #define DOUBLE_INF 1e50
 #define Points vector<Point>
+
 #define EQ(a, b) (abs((a) - (b)) < eps)
+#define GT(a, b) ((a) > (b))
+#define GE(a, b) ((a) - (b) > -eps)
+#define LT(a, b) ((a) < (b))
+#define LE(a, b) ((b) - (a) < eps)
 
 inline double add(double a, double b) {
   if (abs(a + b) < eps * (abs(a) + abs(b))) return 0;
@@ -83,10 +88,10 @@ struct Line {
   Point a, b;
   Line() {}
   Line(Point a, Point b) : a(a), b(b) {}
-  bool on(Point q) { return (a - q).det(b - q) == 0; }
-  // folloing 2 functions verified AOJ CGL_2_A
-  bool is_parallel(Line l) { return (a - b).det(l.a - l.b) == 0; }
-  bool is_orthogonal(Line l) { return (a - b).dot(l.a - l.b) == 0; }
+  bool on(Point q) { return EQ((a - q).det(b - q), 0.0); }
+  // following 2 functions verified AOJ CGL_2_A
+  bool is_parallel(Line l) { return EQ((a - b).det(l.a - l.b), 0.0); }
+  bool is_orthogonal(Line l) { return EQ((a - b).dot(l.a - l.b), 0.0); }
   Point intersection(Line l) {
     assert(!is_parallel(l));
     return a + (b - a) * ((l.b - l.a).det(l.a - a) / (l.b - l.a).det(b - a));
@@ -125,7 +130,7 @@ struct Segment {
   Segment(Point a, Point b) : a(a), b(b) {}
   Line line() { return Line(a, b); }
   bool on(Point q) {
-    return ((a - q).det(b - q) == 0 && (a - q).dot(b - q) <= 0);
+    return (EQ((a - q).det(b - q), 0.0) && LE((a - q).dot(b - q), 0.0));
   }
   // verified AOJ CGL_2_B
   bool is_intersect(Segment s) {
@@ -230,7 +235,7 @@ int contained(Polygon &pol, Point p) {
 // sort points by (x-y) lexicographical order.
 // you can change (y-x) order with no change in convex_hull
 bool comp(const Point &p, const Point &q) {
-  if (p.x != q.x)
+  if (!EQ(p.x, q.x))
     return p.x < q.x;
   else
     return p.y < q.y;
