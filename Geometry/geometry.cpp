@@ -19,9 +19,9 @@ using namespace std;
 
 #define EQ(a, b) (abs((a) - (b)) < eps)
 #define GT(a, b) ((a) > (b))
-#define GE(a, b) ((a) - (b) > -eps)
+#define GE(a, b) (GT(a, b) || EQ(a, b))
 #define LT(a, b) ((a) < (b))
-#define LE(a, b) ((b) - (a) < eps)
+#define LE(a, b) (LT(a, b) || EQ(a, b))
 
 inline double add(double a, double b) {
   if (abs(a + b) < eps * (abs(a) + abs(b))) return 0;
@@ -213,7 +213,6 @@ enum { OUT, ON, IN };
 int contained(Polygon &pol, Point p) {
   int n = pol.size();
   Point outer(1e9, p.y);
-  Segment s = Segment(outer, p);
   int cnt = 0;
   for (int i = 0; i < n; i++) {
     Segment e = Segment(pol[i], pol[(i + 1) % n]);
