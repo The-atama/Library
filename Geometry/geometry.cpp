@@ -423,7 +423,7 @@ struct Circle {
         res.pb(p);
         return res;
       } else { // NOT_CROSS
-        Points res = tangent(p);
+        res = tangent(p);
         res.pb(center + v);
         res.pb(center - v);
         return res;
@@ -443,7 +443,7 @@ struct Circle {
         res.pb(p);
         return res;
       } else { // NOT_CROSS
-        Points res = tangent(p);
+        res = tangent(p);
         Points add = tangent(q);
         for (int i = 0; i < add.size(); i++) res.pb(add[i]);
         return res;
