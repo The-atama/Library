@@ -220,8 +220,8 @@ int contained(Polygon &pol, Point p) {
     Vector a = pol[i] - p;
     Vector b = pol[(i + 1) % n] - p;
     if (a.y > b.y) swap(a, b);
-    if (a.y <= 0.0 && b.y > 0.0) {
-      if (a.det(b) < 0.0) cnt++;
+    if (LE(a.y, 0.0) && GT(b.y, 0.0)) {
+      if (LT(a.det(b), 0.0)) cnt++;
     }
   }
   if ((cnt & 1) == 1)
@@ -250,11 +250,13 @@ Polygon convex_hull(vector<Point> ps) {
   int n = ps.size();
   Polygon qs(2 * n);
   for (int i = 0; i < n; i++) {
-    while (k > 1 && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0) k--;
+    while (k > 1 && LT((qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]), 0.0))
+      k--;
     qs[k++] = ps[i];
   }
   for (int i = n - 2, t = k; i >= 0; i--) {
-    while (k > t && (qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]) < 0.0) k--;
+    while (k > t && LT((qs[k - 1] - qs[k - 2]).det(ps[i] - qs[k - 1]), 0.0))
+      k--;
     qs[k++] = ps[i];
   }
   qs.resize(k - 1);
@@ -336,9 +338,9 @@ double closest_pair(vector<Point> a) {
 // tangent lines.)
 enum {
   INCLUDE,
-  INSCRIBED, // in japanese "naisetsu"
+  INSCRIBED, // "Naisetsu" in Japanese
   INTERSECT,
-  CIRCUMSCRIBED, // in japanese "gaisetsu"
+  CIRCUMSCRIBED, // "Gaisetsu" in Japanese
   NOT_CROSS,
 };
 
