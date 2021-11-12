@@ -18,11 +18,21 @@ typedef vector<ll> vll;
 #define sq(x) ((x) * (x))
 #define dmp(x) cerr << #x << ": " << x << endl;
 
-// n変数n+1次連立方程式を解く
+// N変数連立方程式(Ax=bの形)を解く
+//
+// 引数のAは拡大係数行列. (Ax=bでAとbをそのまま並べてつなげたもの)
+// すなわち
+// A[i][0] * x_0 + A[i][1] * x_1 + ... A[i][n - 1] * x_{n-1} = A[i][n]
+// (0 <= i < n)
+//
+//
 // 関数が終わったときにAの左側は単位行列になる
 // Note: 誤差に注意
+//
 // Verify:
 // https://onlinejudge.u-aizu.ac.jp/solutions/problem/1328/review/4927454/okuraofvegetable/C++17
+// https://onlinejudge.u-aizu.ac.jp/solutions/problem/2171/review/6045411/okuraofvegetable/C++17
+
 vector<double> solve_equation(vector<vector<double>> &A) {
   assert(A[0].size() == A.size() + 1);
   for (int i = 0; i < A.size(); i++) {
