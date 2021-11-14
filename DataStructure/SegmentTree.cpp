@@ -36,7 +36,7 @@ struct SegmentTree {
     }
   }
 
-  D query(int a, int b, int k, int l, int r) {
+  D query(int a, int b, int k, int l, int r) const {
     if (r <= a || b <= l) {
       return d_unit;
     } else if (a <= l && r <= b) {
@@ -47,12 +47,13 @@ struct SegmentTree {
       return dm(lch, rch);
     }
   }
-  D query(int a, int b) { return query(a, b, 0, 0, length); }
-  D get_point(int x) { return seg[length - 1 + x]; }
+  D query(int a, int b) const { return query(a, b, 0, 0, length); }
+  D get_point(int x) const { return seg[length - 1 + x]; }
 };
 
 int main() {
 #define INF 2000000000
-  SegmentTree<int> seg(100, [](int x, int y) { return min(x, y); }, INF);
+  SegmentTree<int> seg(
+      100, [](int x, int y) { return min(x, y); }, INF);
   return 0;
 }
